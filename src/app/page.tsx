@@ -124,6 +124,76 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Architecture Section */}
+      <section id="architecture" className="relative py-24 sm:py-32 border-t border-border/50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <Badge variant="outline" className="mb-4 border-primary/30 text-primary">Architecture</Badge>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">How It Works</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
+              Simple request flow, blazing fast response times.
+            </p>
+          </div>
+          <div className="max-w-4xl mx-auto">
+            <div className="code-block rounded-xl overflow-hidden">
+              <div className="flex items-center gap-2 px-4 py-3 border-b border-border/50 bg-card/30">
+                <span className="text-xs text-muted-foreground">architecture.txt</span>
+              </div>
+              <pre className="p-6 overflow-x-auto text-xs sm:text-sm leading-relaxed text-muted-foreground">
+{`
+                           ┌─────────────────────────────────────────┐
+                           │            keyvalue.dev API             │
+                           │         ┌───────────────────┐           │
+    ┌──────────┐           │         │                   │           │
+    │  Client  │───────────┼────────▶│   HTTP Handler    │           │
+    │          │◀──────────┼─────────│   (GET/PUT/DEL)   │           │
+    └──────────┘           │         │                   │           │
+         │                 │         └─────────┬─────────┘           │
+         │                 │                   │                     │
+     HTTP/HTTPS            │                   │                     │
+         │                 │         ┌─────────▼─────────┐           │
+         │                 │         │                   │           │
+         │                 │         │   Auth & Tenant   │           │
+         │                 │         │    Isolation      │           │
+         │                 │         │                   │           │
+         │                 │         └─────────┬─────────┘           │
+         │                 │                   │                     │
+         │                 └───────────────────┼─────────────────────┘
+         │                                     │
+         │                                     ▼
+         │                 ┌─────────────────────────────────────────┐
+         │                 │                                         │
+         │                 │   ┌─────────────────────────────────┐   │
+         │                 │   │    S3 Express One Zone Bucket   │   │
+         │                 │   │    ─────────────────────────    │   │
+         │                 │   │                                 │   │
+         │                 │   │    tenant-a/                    │   │
+         │                 │   │      ├── key1 -> value1         │   │
+         │                 │   │      ├── key2 -> value2         │   │
+         │                 │   │      └── ...                    │   │
+         │                 │   │                                 │   │
+         │                 │   │    tenant-b/                    │   │
+         │                 │   │      ├── key1 -> value1         │   │
+         │                 │   │      └── ...                    │   │
+         │                 │   │                                 │   │
+         │                 │   └─────────────────────────────────┘   │
+         │                 │                                         │
+         │                 │             AWS Infrastructure          │
+         │                 └─────────────────────────────────────────┘
+         │
+         │
+         ▼
+  ┌──────────────┐
+  │   Response   │
+  │  < 10ms p99  │
+  └──────────────┘
+`}
+              </pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Quick Start Section */}
       <section id="quickstart" className="relative py-24 sm:py-32 border-t border-border/50">
         <div className="absolute inset-0 gradient-bg-subtle" />
