@@ -15,10 +15,10 @@ export default function Home() {
         <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 lg:py-40">
           <div className="text-center max-w-4xl mx-auto">
             <Badge variant="outline" className="mb-6 border-primary/30 text-primary">
-              Built on AWS S3 Express One Zone
+              Open Source
             </Badge>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
-              Simple, Fast{" "}
+              Simple{" "}
               <span className="text-gradient">Key-Value Storage</span>
               {" "}for Developers
             </h1>
@@ -59,7 +59,7 @@ export default function Home() {
                 <div className="p-2.5 rounded-lg bg-primary/10 w-fit mb-3">
                   <Zap className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle className="text-lg">Blazing Fast</CardTitle>
+                <CardTitle className="text-lg">Low Latency</CardTitle>
                 <CardDescription className="text-muted-foreground">
                   Single-digit millisecond latency with strong consistency guarantees.
                 </CardDescription>
@@ -120,76 +120,6 @@ export default function Home() {
                 </CardDescription>
               </CardHeader>
             </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Architecture Section */}
-      <section id="architecture" className="relative py-24 sm:py-32 border-t border-border/50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <Badge variant="outline" className="mb-4 border-primary/30 text-primary">Architecture</Badge>
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">How It Works</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-              Simple request flow, blazing fast response times.
-            </p>
-          </div>
-          <div className="max-w-4xl mx-auto">
-            <div className="code-block rounded-xl overflow-hidden">
-              <div className="flex items-center gap-2 px-4 py-3 border-b border-border/50 bg-card/30">
-                <span className="text-xs text-muted-foreground">architecture.txt</span>
-              </div>
-              <pre className="p-6 overflow-x-auto text-xs sm:text-sm leading-relaxed text-muted-foreground">
-{`
-                           ┌─────────────────────────────────────────┐
-                           │            keyvalue.dev API             │
-                           │         ┌───────────────────┐           │
-    ┌──────────┐           │         │                   │           │
-    │  Client  │───────────┼────────▶│   HTTP Handler    │           │
-    │          │◀──────────┼─────────│   (GET/PUT/DEL)   │           │
-    └──────────┘           │         │                   │           │
-         │                 │         └─────────┬─────────┘           │
-         │                 │                   │                     │
-     HTTP/HTTPS            │                   │                     │
-         │                 │         ┌─────────▼─────────┐           │
-         │                 │         │                   │           │
-         │                 │         │   Auth & Tenant   │           │
-         │                 │         │    Isolation      │           │
-         │                 │         │                   │           │
-         │                 │         └─────────┬─────────┘           │
-         │                 │                   │                     │
-         │                 └───────────────────┼─────────────────────┘
-         │                                     │
-         │                                     ▼
-         │                 ┌─────────────────────────────────────────┐
-         │                 │                                         │
-         │                 │   ┌─────────────────────────────────┐   │
-         │                 │   │    S3 Express One Zone Bucket   │   │
-         │                 │   │    ─────────────────────────    │   │
-         │                 │   │                                 │   │
-         │                 │   │    tenant-a/                    │   │
-         │                 │   │      ├── key1 -> value1         │   │
-         │                 │   │      ├── key2 -> value2         │   │
-         │                 │   │      └── ...                    │   │
-         │                 │   │                                 │   │
-         │                 │   │    tenant-b/                    │   │
-         │                 │   │      ├── key1 -> value1         │   │
-         │                 │   │      └── ...                    │   │
-         │                 │   │                                 │   │
-         │                 │   └─────────────────────────────────┘   │
-         │                 │                                         │
-         │                 │             AWS Infrastructure          │
-         │                 └─────────────────────────────────────────┘
-         │
-         │
-         ▼
-  ┌──────────────┐
-  │   Response   │
-  │  < 10ms p99  │
-  └──────────────┘
-`}
-              </pre>
-            </div>
           </div>
         </div>
       </section>
@@ -313,16 +243,13 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-border/50 py-8 sm:py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center justify-center">
             <div className="flex items-center gap-2">
               <div className="p-1.5 rounded-lg bg-primary/10">
                 <Database className="h-4 w-4 text-primary" />
               </div>
               <span className="font-semibold">keyvalue.dev</span>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Powered by AWS S3 Express One Zone
-            </p>
           </div>
         </div>
       </footer>
