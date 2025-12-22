@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
-import { GET, PUT, DELETE, HEAD } from '../[key]/route';
+import { GET, PUT, DELETE, HEAD } from '@/app/api/v1/kv/[key]/route';
 import { registerTenant } from '@/lib/tenant';
 import type { Tenant } from '@/types';
 

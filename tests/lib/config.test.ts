@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { generateBucketName, validateConfig, config } from '../config';
+import { generateBucketName, validateConfig, config } from '@/lib/config';
 
 describe('config utilities', () => {
   describe('generateBucketName', () => {

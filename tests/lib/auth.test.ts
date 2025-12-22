@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
-import { extractBearerToken, authenticateRequest, isAuthError } from '../auth';
-import { registerTenant, suspendTenant, reactivateTenant } from '../tenant';
+import { extractBearerToken, authenticateRequest, isAuthError } from '@/lib/auth';
+import { registerTenant, suspendTenant, reactivateTenant } from '@/lib/tenant';
 import type { Tenant } from '@/types';
 
 // Mock the S3 module
-vi.mock('../s3', () => ({
+vi.mock('@/lib/s3', () => ({
   createTenantBucket: vi.fn().mockResolvedValue(undefined),
 }));
 

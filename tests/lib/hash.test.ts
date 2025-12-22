@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getHashPrefix, getObjectKey, generateToken, hashKeyForLogging } from '../hash';
+import { getHashPrefix, getObjectKey, generateToken, hashKeyForLogging } from '@/lib/hash';
 
 describe('hash utilities', () => {
   describe('getHashPrefix', () => {

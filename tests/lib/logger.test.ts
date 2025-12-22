@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { logger, logRequestMetrics, createMetricsCollector } from '../logger';
+import { logger, logRequestMetrics, createMetricsCollector } from '@/lib/logger';
 import type { RequestMetrics } from '@/types';
 
 describe('logger utilities', () => {

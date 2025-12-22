@@ -6,11 +6,11 @@ import {
   suspendTenant,
   reactivateTenant,
   registerTenant,
-} from '../tenant';
+} from '@/lib/tenant';
 import type { Tenant } from '@/types';
 
 // Mock the S3 module to avoid AWS calls
-vi.mock('../s3', () => ({
+vi.mock('@/lib/s3', () => ({
   createTenantBucket: vi.fn().mockResolvedValue(undefined),
 }));
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { PreconditionError } from '../s3';
+import { PreconditionError } from '@/lib/s3';
 
 // Mock the AWS SDK
 vi.mock('@aws-sdk/client-s3', () => {
