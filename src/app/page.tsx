@@ -1,34 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Header } from "@/components/header";
 import { Database, Zap, Shield, Code, ArrowRight, Terminal, CheckCircle } from "lucide-react";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      <nav className="border-b border-border">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Database className="h-6 w-6" />
-            <span className="font-bold text-xl">keyvalue.dev</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" asChild>
-              <a href="#features">Features</a>
-            </Button>
-            <Button variant="ghost" asChild>
-              <a href="#api">API</a>
-            </Button>
-            <Button variant="ghost" asChild>
-              <a href="#quickstart">Quick Start</a>
-            </Button>
-            <Button asChild>
-              <a href="#quickstart">Get Started</a>
-            </Button>
-          </div>
-        </div>
-      </nav>
+      <Header />
 
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-24 text-center">
