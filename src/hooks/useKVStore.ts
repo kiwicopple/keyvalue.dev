@@ -1,16 +1,16 @@
 "use client"
 
-import { useState, useEffect, useCallback } from 'react'
-import type { KVEntry, StorageStrategy } from '@/lib/storage'
+import { useState, useEffect, useCallback, useMemo } from 'react'
+import type { KVEntry } from '@/lib/storage'
 import { LocalStorageStrategy } from '@/lib/storage'
 
-// Create a singleton instance of the storage strategy
-const storage: StorageStrategy = new LocalStorageStrategy()
-
-export function useKVStore() {
+export function useKVStore(databaseId: string) {
   const [entries, setEntries] = useState<KVEntry[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  // Create storage instance for this database
+  const storage = useMemo(() => new LocalStorageStrategy(databaseId), [databaseId])
 
   const loadEntries = useCallback(async () => {
     try {
@@ -23,7 +23,7 @@ export function useKVStore() {
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [storage])
 
   useEffect(() => {
     loadEntries()
@@ -38,7 +38,7 @@ export function useKVStore() {
       setError(err instanceof Error ? err.message : 'Failed to add entry')
       throw err
     }
-  }, [loadEntries])
+  }, [loadEntries, storage])
 
   const updateEntry = useCallback(async (key: string, value: string) => {
     try {
@@ -49,7 +49,7 @@ export function useKVStore() {
       setError(err instanceof Error ? err.message : 'Failed to update entry')
       throw err
     }
-  }, [loadEntries])
+  }, [loadEntries, storage])
 
   const deleteEntry = useCallback(async (key: string) => {
     try {
@@ -63,7 +63,7 @@ export function useKVStore() {
       setError(err instanceof Error ? err.message : 'Failed to delete entry')
       throw err
     }
-  }, [loadEntries])
+  }, [loadEntries, storage])
 
   const clearAll = useCallback(async () => {
     try {
@@ -74,7 +74,7 @@ export function useKVStore() {
       setError(err instanceof Error ? err.message : 'Failed to clear entries')
       throw err
     }
-  }, [loadEntries])
+  }, [loadEntries, storage])
 
   const searchEntries = useCallback(async (pattern: string) => {
     try {
@@ -89,7 +89,7 @@ export function useKVStore() {
       setError(err instanceof Error ? err.message : 'Failed to search entries')
       throw err
     }
-  }, [loadEntries])
+  }, [loadEntries, storage])
 
   return {
     entries,

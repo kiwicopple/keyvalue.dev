@@ -1,18 +1,33 @@
-import type { KVEntry, StorageStrategy } from './types'
+import type { Database, KVEntry, StorageStrategy, DatabaseStorageStrategy } from './types'
 
-const STORAGE_KEY = 'keyvalue_dev_data'
+const DATABASES_KEY = 'keyvalue_dev_databases'
+const DATA_PREFIX = 'keyvalue_dev_db_'
+
+function generateId(): string {
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+}
 
 /**
  * LocalStorage implementation of the StorageStrategy interface
- * Stores all key-value pairs in browser's localStorage
+ * Stores all key-value pairs for a specific database in browser's localStorage
  */
 export class LocalStorageStrategy implements StorageStrategy {
+  private databaseId: string
+
+  constructor(databaseId: string) {
+    this.databaseId = databaseId
+  }
+
+  private get storageKey(): string {
+    return `${DATA_PREFIX}${this.databaseId}`
+  }
+
   private getStorageData(): Record<string, KVEntry> {
     if (typeof window === 'undefined') {
       return {}
     }
     try {
-      const data = localStorage.getItem(STORAGE_KEY)
+      const data = localStorage.getItem(this.storageKey)
       return data ? JSON.parse(data) : {}
     } catch {
       return {}
@@ -23,7 +38,7 @@ export class LocalStorageStrategy implements StorageStrategy {
     if (typeof window === 'undefined') {
       return
     }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+    localStorage.setItem(this.storageKey, JSON.stringify(data))
   }
 
   async getAll(): Promise<KVEntry[]> {
@@ -89,5 +104,103 @@ export class LocalStorageStrategy implements StorageStrategy {
         entry.value.toLowerCase().includes(lowerPattern)
       )
       .sort((a, b) => b.updatedAt - a.updatedAt)
+  }
+}
+
+/**
+ * LocalStorage implementation of the DatabaseStorageStrategy interface
+ * Manages multiple databases in browser's localStorage
+ */
+export class LocalDatabaseStorageStrategy implements DatabaseStorageStrategy {
+  private getDatabases(): Record<string, Database> {
+    if (typeof window === 'undefined') {
+      return {}
+    }
+    try {
+      const data = localStorage.getItem(DATABASES_KEY)
+      return data ? JSON.parse(data) : {}
+    } catch {
+      return {}
+    }
+  }
+
+  private setDatabases(data: Record<string, Database>): void {
+    if (typeof window === 'undefined') {
+      return
+    }
+    localStorage.setItem(DATABASES_KEY, JSON.stringify(data))
+  }
+
+  async getAllDatabases(): Promise<Database[]> {
+    const data = this.getDatabases()
+    return Object.values(data).sort((a, b) => b.updatedAt - a.updatedAt)
+  }
+
+  async getDatabase(id: string): Promise<Database | null> {
+    const data = this.getDatabases()
+    return data[id] || null
+  }
+
+  async createDatabase(name: string, description?: string): Promise<Database> {
+    const data = this.getDatabases()
+    const now = Date.now()
+    const id = generateId()
+
+    const database: Database = {
+      id,
+      name,
+      description,
+      createdAt: now,
+      updatedAt: now,
+    }
+
+    data[id] = database
+    this.setDatabases(data)
+
+    return database
+  }
+
+  async updateDatabase(id: string, name: string, description?: string): Promise<Database | null> {
+    const data = this.getDatabases()
+    const existing = data[id]
+
+    if (!existing) {
+      return null
+    }
+
+    const updated: Database = {
+      ...existing,
+      name,
+      description,
+      updatedAt: Date.now(),
+    }
+
+    data[id] = updated
+    this.setDatabases(data)
+
+    return updated
+  }
+
+  async deleteDatabase(id: string): Promise<boolean> {
+    const data = this.getDatabases()
+
+    if (!(id in data)) {
+      return false
+    }
+
+    // Delete the database
+    delete data[id]
+    this.setDatabases(data)
+
+    // Also delete all entries for this database
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(`${DATA_PREFIX}${id}`)
+    }
+
+    return true
+  }
+
+  getStorageForDatabase(databaseId: string): StorageStrategy {
+    return new LocalStorageStrategy(databaseId)
   }
 }

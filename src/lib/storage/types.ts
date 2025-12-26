@@ -1,4 +1,15 @@
 /**
+ * Database metadata
+ */
+export interface Database {
+  id: string
+  name: string
+  description?: string
+  createdAt: number
+  updatedAt: number
+}
+
+/**
  * Key-Value entry with metadata
  */
 export interface KVEntry {
@@ -9,7 +20,7 @@ export interface KVEntry {
 }
 
 /**
- * Storage strategy interface
+ * Storage strategy interface for key-value operations within a database
  * Implementations can use localStorage, S3, or any other storage backend
  */
 export interface StorageStrategy {
@@ -54,6 +65,41 @@ export interface StorageStrategy {
    * Search entries by key pattern (simple substring match)
    */
   search(pattern: string): Promise<KVEntry[]>
+}
+
+/**
+ * Database storage strategy interface for managing multiple databases
+ */
+export interface DatabaseStorageStrategy {
+  /**
+   * Get all databases
+   */
+  getAllDatabases(): Promise<Database[]>
+
+  /**
+   * Get a single database by ID
+   */
+  getDatabase(id: string): Promise<Database | null>
+
+  /**
+   * Create a new database
+   */
+  createDatabase(name: string, description?: string): Promise<Database>
+
+  /**
+   * Update a database
+   */
+  updateDatabase(id: string, name: string, description?: string): Promise<Database | null>
+
+  /**
+   * Delete a database and all its entries
+   */
+  deleteDatabase(id: string): Promise<boolean>
+
+  /**
+   * Get a storage strategy for a specific database
+   */
+  getStorageForDatabase(databaseId: string): StorageStrategy
 }
 
 /**
