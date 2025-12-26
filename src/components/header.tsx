@@ -36,7 +36,7 @@ export function Header() {
             </Link>
           </Button>
           <Button size="sm" className="ml-2 glow-sm" asChild>
-            <a href="#quickstart">Get Started</a>
+            <Link href="/dashboard">Get Started</Link>
           </Button>
         </div>
 
@@ -72,7 +72,7 @@ export function Header() {
               </Link>
             </Button>
             <Button className="mt-2" asChild>
-              <a href="#quickstart" onClick={() => setMobileMenuOpen(false)}>Get Started</a>
+              <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>Get Started</Link>
             </Button>
           </div>
         </div>
