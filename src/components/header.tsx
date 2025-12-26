@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Database, Menu, X } from "lucide-react";
+import { Database, Menu, X, LayoutDashboard } from "lucide-react";
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -27,6 +28,12 @@ export function Header() {
           </Button>
           <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground" asChild>
             <a href="#quickstart">Quick Start</a>
+          </Button>
+          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground gap-1.5" asChild>
+            <Link href="/dashboard">
+              <LayoutDashboard className="h-4 w-4" />
+              Dashboard
+            </Link>
           </Button>
           <Button size="sm" className="ml-2 glow-sm" asChild>
             <a href="#quickstart">Get Started</a>
@@ -57,6 +64,12 @@ export function Header() {
             </Button>
             <Button variant="ghost" className="justify-start text-muted-foreground" asChild>
               <a href="#quickstart" onClick={() => setMobileMenuOpen(false)}>Quick Start</a>
+            </Button>
+            <Button variant="ghost" className="justify-start text-muted-foreground gap-2" asChild>
+              <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                <LayoutDashboard className="h-4 w-4" />
+                Dashboard
+              </Link>
             </Button>
             <Button className="mt-2" asChild>
               <a href="#quickstart" onClick={() => setMobileMenuOpen(false)}>Get Started</a>
