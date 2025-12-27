@@ -17,6 +17,8 @@ export interface BreadcrumbItem {
 interface DashboardHeaderContextType {
   breadcrumbs: BreadcrumbItem[]
   setBreadcrumbs: (items: BreadcrumbItem[]) => void
+  description: string
+  setDescription: (desc: string) => void
   isRefreshing: boolean
   setIsRefreshing: (value: boolean) => void
   onRefresh: (() => void) | null
@@ -37,6 +39,7 @@ export function useDashboardHeader() {
 // Provider
 export function DashboardHeaderProvider({ children }: { children: ReactNode }) {
   const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([])
+  const [description, setDescription] = useState("")
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [onRefresh, setOnRefresh] = useState<(() => void) | null>(null)
 
@@ -45,6 +48,8 @@ export function DashboardHeaderProvider({ children }: { children: ReactNode }) {
       value={{
         breadcrumbs,
         setBreadcrumbs,
+        description,
+        setDescription,
         isRefreshing,
         setIsRefreshing,
         onRefresh,
@@ -59,7 +64,7 @@ export function DashboardHeaderProvider({ children }: { children: ReactNode }) {
 // Header Component
 export function DashboardHeader() {
   const pathname = usePathname()
-  const { breadcrumbs, isRefreshing, onRefresh } = useDashboardHeader()
+  const { breadcrumbs, description, isRefreshing, onRefresh } = useDashboardHeader()
 
   const handleRefresh = useCallback(() => {
     if (onRefresh) {
@@ -106,7 +111,7 @@ export function DashboardHeader() {
 
       {/* Breadcrumb Bar */}
       {breadcrumbs.length > 0 && (
-        <div className="flex items-center h-10 px-4 lg:px-8 border-t border-border/30 bg-muted/30">
+        <div className="px-4 lg:px-8 py-3 border-t border-border/30 bg-muted/30">
           <nav className="flex items-center gap-1 text-sm">
             {breadcrumbs.map((item, index) => (
               <div key={index} className="flex items-center gap-1">
@@ -126,6 +131,9 @@ export function DashboardHeader() {
               </div>
             ))}
           </nav>
+          {description && (
+            <p className="text-sm text-muted-foreground mt-1">{description}</p>
+          )}
         </div>
       )}
     </div>

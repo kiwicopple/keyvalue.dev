@@ -22,17 +22,19 @@ import {
 
 export default function SettingsPage() {
   const { databases, deleteDatabase, refresh } = useDatabases()
-  const { setBreadcrumbs } = useDashboardHeader()
+  const { setBreadcrumbs, setDescription } = useDashboardHeader()
   const [isClearDialogOpen, setIsClearDialogOpen] = useState(false)
   const [isClearing, setIsClearing] = useState(false)
 
   // Set up header breadcrumbs
   useEffect(() => {
     setBreadcrumbs([{ label: "Settings" }])
+    setDescription("Manage your dashboard preferences and data")
     return () => {
       setBreadcrumbs([])
+      setDescription("")
     }
-  }, [setBreadcrumbs])
+  }, [setBreadcrumbs, setDescription])
 
   const handleClearAll = useCallback(async () => {
     setIsClearing(true)
@@ -52,14 +54,6 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold">Settings</h1>
-        <p className="text-muted-foreground mt-1">
-          Manage your dashboard preferences and data
-        </p>
-      </div>
-
       {/* Storage Info */}
       <Card className="border-border/50">
         <CardHeader>

@@ -24,7 +24,7 @@ import {
 export default function NewDatabasePage() {
   const router = useRouter()
   const { createDatabase } = useDatabases()
-  const { setBreadcrumbs } = useDashboardHeader()
+  const { setBreadcrumbs, setDescription: setHeaderDescription } = useDashboardHeader()
 
   // Set up header breadcrumbs
   useEffect(() => {
@@ -32,10 +32,12 @@ export default function NewDatabasePage() {
       { label: "Databases", href: "/dashboard" },
       { label: "New Database" }
     ])
+    setHeaderDescription("Set up a new key-value database to store your data")
     return () => {
       setBreadcrumbs([])
+      setHeaderDescription("")
     }
-  }, [setBreadcrumbs])
+  }, [setBreadcrumbs, setHeaderDescription])
 
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
@@ -63,14 +65,6 @@ export default function NewDatabasePage() {
 
   return (
     <div className="space-y-6 max-w-2xl">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold">Create New Database</h1>
-        <p className="text-muted-foreground mt-1">
-          Set up a new key-value database to store your data
-        </p>
-      </div>
-
       {/* Form */}
       <Card className="border-border/50">
         <CardHeader>

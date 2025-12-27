@@ -71,7 +71,7 @@ export default function DatabasePage() {
 
   const { entries, isLoading, error, addEntry, updateEntry, deleteEntry, clearAll, searchEntries, refresh } = useKVStore(databaseId)
   const { getDatabase } = useDatabases()
-  const { setBreadcrumbs, setIsRefreshing, setOnRefresh } = useDashboardHeader()
+  const { setBreadcrumbs, setDescription, setIsRefreshing, setOnRefresh } = useDashboardHeader()
 
   const [database, setDatabase] = useState<DatabaseType | null>(null)
   const [isLoadingDb, setIsLoadingDb] = useState(true)
@@ -94,13 +94,15 @@ export default function DatabasePage() {
         { label: "Databases", href: "/dashboard" },
         { label: database.name }
       ])
+      setDescription(database.description || "Manage key-value entries")
     }
     setOnRefresh(() => refresh)
     return () => {
       setBreadcrumbs([])
+      setDescription("")
       setOnRefresh(null)
     }
-  }, [database, setBreadcrumbs, setOnRefresh, refresh])
+  }, [database, setBreadcrumbs, setDescription, setOnRefresh, refresh])
 
   // Sync loading state with header
   useEffect(() => {
@@ -241,14 +243,6 @@ export default function DatabasePage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-      <div>
-        <h1 className="text-2xl font-bold">{database.name}</h1>
-        {database.description && (
-          <p className="text-muted-foreground mt-1">{database.description}</p>
-        )}
-      </div>
-
       {/* Stats Cards */}
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
         <Card className="gradient-bg-subtle border-border/50">

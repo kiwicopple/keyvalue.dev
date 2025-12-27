@@ -51,17 +51,19 @@ function formatDate(timestamp: number): string {
 
 export default function DashboardPage() {
   const { databases, isLoading, error, updateDatabase, deleteDatabase, refresh } = useDatabases()
-  const { setBreadcrumbs, setIsRefreshing, setOnRefresh } = useDashboardHeader()
+  const { setBreadcrumbs, setDescription, setIsRefreshing, setOnRefresh } = useDashboardHeader()
 
   // Set up header
   useEffect(() => {
     setBreadcrumbs([{ label: "Databases" }])
+    setDescription("Manage your key-value databases")
     setOnRefresh(() => refresh)
     return () => {
       setBreadcrumbs([])
+      setDescription("")
       setOnRefresh(null)
     }
-  }, [setBreadcrumbs, setOnRefresh, refresh])
+  }, [setBreadcrumbs, setDescription, setOnRefresh, refresh])
 
   // Sync loading state with header
   useEffect(() => {
@@ -125,14 +127,6 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-      <div>
-        <h1 className="text-2xl font-bold">Databases</h1>
-        <p className="text-muted-foreground mt-1">
-          Manage your key-value databases
-        </p>
-      </div>
-
       {/* Stats */}
       <Card className="gradient-bg-subtle border-border/50">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
