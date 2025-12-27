@@ -281,26 +281,20 @@ export default function DatabasePage() {
 
       {/* Entries List */}
       {!isLoading && entries.length > 0 && (
-        <div className="border border-border/60 rounded-lg divide-y divide-border/60">
+        <div className="-mx-4 lg:mx-0 lg:border lg:border-border/60 lg:rounded-lg divide-y divide-border/60 border-y border-border/60 lg:border-y-0">
           {entries.map((entry) => (
             <div
               key={entry.key}
               className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors group"
             >
-              <Key className="h-4 w-4 text-muted-foreground shrink-0" />
               <button
                 onClick={() => openViewDialog(entry.key, entry.value)}
                 className="flex-1 min-w-0 text-left"
               >
-                <div className="flex items-center gap-2">
-                  <code className="font-medium text-sm">{entry.key}</code>
-                  <span className="text-xs text-muted-foreground shrink-0">
-                    {formatRelativeTime(entry.updatedAt)}
-                  </span>
-                </div>
-                <p className="text-sm text-muted-foreground truncate mt-0.5">
+                <code className="font-medium text-sm block truncate">{entry.key}</code>
+                <span className="text-sm text-muted-foreground truncate block mt-0.5">
                   {truncateValue(entry.value, 80)}
-                </p>
+                </span>
               </button>
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <Button

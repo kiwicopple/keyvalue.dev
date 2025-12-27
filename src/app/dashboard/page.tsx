@@ -155,28 +155,20 @@ export default function DashboardPage() {
 
       {/* Database List */}
       {!isLoading && databases.length > 0 && (
-        <div className="border border-border/60 rounded-lg divide-y divide-border/60">
+        <div className="-mx-4 lg:mx-0 lg:border lg:border-border/60 lg:rounded-lg divide-y divide-border/60 border-y border-border/60 lg:border-y-0">
           {databases.map((db) => (
             <div
               key={db.id}
               className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors group"
             >
-              <Database className="h-4 w-4 text-muted-foreground shrink-0" />
               <Link
                 href={`/dashboard/db/${db.id}`}
                 className="flex-1 min-w-0"
               >
-                <div className="flex items-center gap-2">
-                  <span className="font-medium truncate">{db.name}</span>
-                  <span className="text-xs text-muted-foreground shrink-0">
-                    {formatRelativeTime(db.updatedAt)}
-                  </span>
-                </div>
-                {db.description && (
-                  <p className="text-sm text-muted-foreground truncate mt-0.5">
-                    {db.description}
-                  </p>
-                )}
+                <span className="font-medium truncate block">{db.name}</span>
+                <span className="text-sm text-muted-foreground truncate block mt-0.5">
+                  {db.description || `Updated ${formatRelativeTime(db.updatedAt)}`}
+                </span>
               </Link>
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <Button
