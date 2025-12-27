@@ -125,6 +125,12 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-4">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-xl font-semibold">Databases</h1>
+        <p className="text-sm text-muted-foreground">Manage your key-value databases</p>
+      </div>
+
       {/* Error State */}
       {error && (
         <div className="text-sm text-destructive px-3 py-2 border border-destructive/30 rounded-md">

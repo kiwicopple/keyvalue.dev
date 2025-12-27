@@ -109,33 +109,6 @@ export function DashboardHeader() {
         </div>
       </div>
 
-      {/* Breadcrumb Bar */}
-      {breadcrumbs.length > 0 && (
-        <div className="px-4 lg:px-8 py-3 border-t border-border/30 bg-muted/30">
-          <nav className="flex items-center gap-1 text-sm">
-            {breadcrumbs.map((item, index) => (
-              <div key={index} className="flex items-center gap-1">
-                {index > 0 && (
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                )}
-                {item.href ? (
-                  <Link
-                    href={item.href}
-                    className="text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {item.label}
-                  </Link>
-                ) : (
-                  <span className="text-foreground font-medium">{item.label}</span>
-                )}
-              </div>
-            ))}
-          </nav>
-          {description && (
-            <p className="text-sm text-muted-foreground mt-1">{description}</p>
-          )}
-        </div>
-      )}
     </div>
   )
 }

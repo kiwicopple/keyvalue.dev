@@ -53,7 +53,13 @@ export default function SettingsPage() {
   }, [databases, deleteDatabase, refresh])
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-xl font-semibold">Settings</h1>
+        <p className="text-sm text-muted-foreground">Manage your dashboard preferences and data</p>
+      </div>
+
       {/* Storage Info */}
       <Card className="border-border/50">
         <CardHeader>

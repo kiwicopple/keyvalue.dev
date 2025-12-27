@@ -64,7 +64,13 @@ export default function NewDatabasePage() {
   }, [name, description, createDatabase, router])
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-4 max-w-2xl">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-xl font-semibold">New Database</h1>
+        <p className="text-sm text-muted-foreground">Set up a new key-value database to store your data</p>
+      </div>
+
       {/* Form */}
       <Card className="border-border/50">
         <CardHeader>

@@ -220,6 +220,12 @@ export default function DatabasePage() {
 
   return (
     <div className="space-y-4">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-xl font-semibold">{database.name}</h1>
+        <p className="text-sm text-muted-foreground">{database.description || "Manage key-value entries"}</p>
+      </div>
+
       {/* Search and Actions Bar */}
       <div className="flex items-center gap-3">
         <div className="relative flex-1">
