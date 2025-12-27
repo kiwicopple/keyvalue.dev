@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react"
 import Link from "next/link"
-import { Plus, Database, Trash2, Edit, RefreshCw, Clock, ChevronRight } from "lucide-react"
+import { Plus, Database, Trash2, Edit, RefreshCw, ChevronRight } from "lucide-react"
 
 import { useDatabases } from "@/hooks/useDatabases"
 import { Button } from "@/components/ui/button"
@@ -49,10 +49,9 @@ function formatDate(timestamp: number): string {
 }
 
 export default function DashboardPage() {
-  const { databases, isLoading, error, createDatabase, updateDatabase, deleteDatabase, refresh } = useDatabases()
+  const { databases, isLoading, error, updateDatabase, deleteDatabase, refresh } = useDatabases()
 
   // Dialog states
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
@@ -61,23 +60,6 @@ export default function DashboardPage() {
   const [formDescription, setFormDescription] = useState("")
   const [selectedDatabase, setSelectedDatabase] = useState<{ id: string; name: string } | null>(null)
   const [formError, setFormError] = useState("")
-
-  // Handle create database
-  const handleCreate = useCallback(async () => {
-    if (!formName.trim()) {
-      setFormError("Name is required")
-      return
-    }
-    try {
-      await createDatabase(formName.trim(), formDescription.trim() || undefined)
-      setIsCreateDialogOpen(false)
-      setFormName("")
-      setFormDescription("")
-      setFormError("")
-    } catch {
-      setFormError("Failed to create database")
-    }
-  }, [formName, formDescription, createDatabase])
 
   // Handle edit database
   const handleEdit = useCallback(async () => {
@@ -108,14 +90,6 @@ export default function DashboardPage() {
       // Error is handled by the hook
     }
   }, [selectedDatabase, deleteDatabase])
-
-  // Open create dialog
-  const openCreateDialog = useCallback(() => {
-    setFormName("")
-    setFormDescription("")
-    setFormError("")
-    setIsCreateDialogOpen(true)
-  }, [])
 
   // Open edit dialog
   const openEditDialog = useCallback((id: string, name: string, description?: string) => {
@@ -151,46 +125,25 @@ export default function DashboardPage() {
             </TooltipTrigger>
             <TooltipContent>Refresh</TooltipContent>
           </Tooltip>
-          <Button onClick={openCreateDialog} className="gap-2">
-            <Plus className="h-4 w-4" />
-            <span>New Database</span>
+          <Button asChild className="gap-2">
+            <Link href="/dashboard/new">
+              <Plus className="h-4 w-4" />
+              <span>New Database</span>
+            </Link>
           </Button>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
-        <Card className="gradient-bg-subtle border-border/50">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Databases</CardTitle>
-            <Database className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{databases.length}</div>
-          </CardContent>
-        </Card>
-        <Card className="gradient-bg-subtle border-border/50">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Storage</CardTitle>
-            <Database className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">LocalStorage</div>
-            <p className="text-xs text-muted-foreground mt-1">Browser storage</p>
-          </CardContent>
-        </Card>
-        <Card className="gradient-bg-subtle border-border/50">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Last Updated</CardTitle>
-            <Clock className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {databases.length > 0 ? formatRelativeTime(databases[0].updatedAt) : "N/A"}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <Card className="gradient-bg-subtle border-border/50">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium text-muted-foreground">Total Databases</CardTitle>
+          <Database className="h-4 w-4 text-primary" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{databases.length}</div>
+        </CardContent>
+      </Card>
 
       {/* Error State */}
       {error && (
@@ -216,9 +169,11 @@ export default function DashboardPage() {
               <p className="text-muted-foreground mb-4">
                 Get started by creating your first database
               </p>
-              <Button onClick={openCreateDialog} className="gap-2">
-                <Plus className="h-4 w-4" />
-                Create Database
+              <Button asChild className="gap-2">
+                <Link href="/dashboard/new">
+                  <Plus className="h-4 w-4" />
+                  Create Database
+                </Link>
               </Button>
             </div>
           </CardContent>
@@ -298,48 +253,6 @@ export default function DashboardPage() {
           ))}
         </div>
       )}
-
-      {/* Create Database Dialog */}
-      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Create New Database</DialogTitle>
-            <DialogDescription>
-              Create a new key-value database to store your data
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="create-name">Name</Label>
-              <Input
-                id="create-name"
-                placeholder="My Database"
-                value={formName}
-                onChange={(e) => setFormName(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="create-description">Description (optional)</Label>
-              <Textarea
-                id="create-description"
-                placeholder="A brief description of this database..."
-                value={formDescription}
-                onChange={(e) => setFormDescription(e.target.value)}
-                rows={3}
-              />
-            </div>
-            {formError && (
-              <p className="text-sm text-destructive">{formError}</p>
-            )}
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleCreate}>Create Database</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* Edit Database Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
