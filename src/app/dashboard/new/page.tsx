@@ -1,11 +1,12 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Database, HardDrive, Cloud } from "lucide-react"
 
 import { useDatabases } from "@/hooks/useDatabases"
+import { useDashboardHeader } from "@/components/dashboard/header"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -23,6 +24,18 @@ import {
 export default function NewDatabasePage() {
   const router = useRouter()
   const { createDatabase } = useDatabases()
+  const { setBreadcrumbs } = useDashboardHeader()
+
+  // Set up header breadcrumbs
+  useEffect(() => {
+    setBreadcrumbs([
+      { label: "Databases", href: "/dashboard" },
+      { label: "New Database" }
+    ])
+    return () => {
+      setBreadcrumbs([])
+    }
+  }, [setBreadcrumbs])
 
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
@@ -49,16 +62,7 @@ export default function NewDatabasePage() {
   }, [name, description, createDatabase, router])
 
   return (
-    <div className="space-y-6 pt-12 lg:pt-0 max-w-2xl">
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Link href="/dashboard" className="hover:text-foreground transition-colors">
-          Databases
-        </Link>
-        <span>/</span>
-        <span className="text-foreground">New Database</span>
-      </div>
-
+    <div className="space-y-6 max-w-2xl">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold">Create New Database</h1>

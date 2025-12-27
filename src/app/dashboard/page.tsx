@@ -1,10 +1,11 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import Link from "next/link"
 import { Plus, Database, Trash2, Edit, RefreshCw, ChevronRight } from "lucide-react"
 
 import { useDatabases } from "@/hooks/useDatabases"
+import { useDashboardHeader } from "@/components/dashboard/header"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -50,6 +51,22 @@ function formatDate(timestamp: number): string {
 
 export default function DashboardPage() {
   const { databases, isLoading, error, updateDatabase, deleteDatabase, refresh } = useDatabases()
+  const { setBreadcrumbs, setIsRefreshing, setOnRefresh } = useDashboardHeader()
+
+  // Set up header
+  useEffect(() => {
+    setBreadcrumbs([{ label: "Databases" }])
+    setOnRefresh(() => refresh)
+    return () => {
+      setBreadcrumbs([])
+      setOnRefresh(null)
+    }
+  }, [setBreadcrumbs, setOnRefresh, refresh])
+
+  // Sync loading state with header
+  useEffect(() => {
+    setIsRefreshing(isLoading)
+  }, [isLoading, setIsRefreshing])
 
   // Dialog states
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -107,31 +124,13 @@ export default function DashboardPage() {
   }, [])
 
   return (
-    <div className="space-y-6 pt-12 lg:pt-0">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">Databases</h1>
-          <p className="text-muted-foreground mt-1">
-            Manage your key-value databases
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="outline" size="icon" onClick={refresh} disabled={isLoading}>
-                <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Refresh</TooltipContent>
-          </Tooltip>
-          <Button asChild className="gap-2">
-            <Link href="/dashboard/new">
-              <Plus className="h-4 w-4" />
-              <span>New Database</span>
-            </Link>
-          </Button>
-        </div>
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-2xl font-bold">Databases</h1>
+        <p className="text-muted-foreground mt-1">
+          Manage your key-value databases
+        </p>
       </div>
 
       {/* Stats */}

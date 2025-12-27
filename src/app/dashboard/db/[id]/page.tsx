@@ -3,10 +3,11 @@
 import { useState, useCallback, useEffect } from "react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
-import { Plus, Search, Trash2, Edit, RefreshCw, Database, Key, Clock, ArrowLeft } from "lucide-react"
+import { Plus, Search, Trash2, Edit, RefreshCw, Database, Key, Clock } from "lucide-react"
 
 import { useKVStore } from "@/hooks/useKVStore"
 import { useDatabases } from "@/hooks/useDatabases"
+import { useDashboardHeader } from "@/components/dashboard/header"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -70,6 +71,7 @@ export default function DatabasePage() {
 
   const { entries, isLoading, error, addEntry, updateEntry, deleteEntry, clearAll, searchEntries, refresh } = useKVStore(databaseId)
   const { getDatabase } = useDatabases()
+  const { setBreadcrumbs, setIsRefreshing, setOnRefresh } = useDashboardHeader()
 
   const [database, setDatabase] = useState<DatabaseType | null>(null)
   const [isLoadingDb, setIsLoadingDb] = useState(true)
@@ -84,6 +86,26 @@ export default function DatabasePage() {
     }
     loadDb()
   }, [databaseId, getDatabase])
+
+  // Set up header breadcrumbs and refresh
+  useEffect(() => {
+    if (database) {
+      setBreadcrumbs([
+        { label: "Databases", href: "/dashboard" },
+        { label: database.name }
+      ])
+    }
+    setOnRefresh(() => refresh)
+    return () => {
+      setBreadcrumbs([])
+      setOnRefresh(null)
+    }
+  }, [database, setBreadcrumbs, setOnRefresh, refresh])
+
+  // Sync loading state with header
+  useEffect(() => {
+    setIsRefreshing(isLoading)
+  }, [isLoading, setIsRefreshing])
 
   // Search state
   const [searchQuery, setSearchQuery] = useState("")
@@ -198,7 +220,7 @@ export default function DatabasePage() {
 
   if (!database) {
     return (
-      <div className="space-y-6 pt-12 lg:pt-0">
+      <div className="space-y-6">
         <Card className="border-border/50">
           <CardContent className="py-12">
             <div className="text-center">
@@ -208,10 +230,7 @@ export default function DatabasePage() {
                 The database you&apos;re looking for doesn&apos;t exist or has been deleted.
               </p>
               <Link href="/dashboard">
-                <Button className="gap-2">
-                  <ArrowLeft className="h-4 w-4" />
-                  Back to Databases
-                </Button>
+                <Button>Back to Databases</Button>
               </Link>
             </div>
           </CardContent>
@@ -221,38 +240,13 @@ export default function DatabasePage() {
   }
 
   return (
-    <div className="space-y-6 pt-12 lg:pt-0">
-      {/* Header */}
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Link href="/dashboard" className="hover:text-foreground transition-colors">
-            Databases
-          </Link>
-          <span>/</span>
-          <span className="text-foreground">{database.name}</span>
-        </div>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold">{database.name}</h1>
-            {database.description && (
-              <p className="text-muted-foreground mt-1">{database.description}</p>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="icon" onClick={refresh} disabled={isLoading}>
-                  <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Refresh</TooltipContent>
-            </Tooltip>
-            <Button onClick={openAddDialog} className="gap-2">
-              <Plus className="h-4 w-4" />
-              <span className="hidden sm:inline">Add Entry</span>
-            </Button>
-          </div>
-        </div>
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-2xl font-bold">{database.name}</h1>
+        {database.description && (
+          <p className="text-muted-foreground mt-1">{database.description}</p>
+        )}
       </div>
 
       {/* Stats Cards */}
@@ -299,17 +293,23 @@ export default function DatabasePage() {
                 Manage key-value pairs in this database
               </CardDescription>
             </div>
-            {entries.length > 0 && (
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => setIsClearDialogOpen(true)}
-                className="gap-2"
-              >
-                <Trash2 className="h-4 w-4" />
-                <span className="hidden sm:inline">Clear All</span>
+            <div className="flex items-center gap-2">
+              {entries.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsClearDialogOpen(true)}
+                  className="gap-2 text-destructive hover:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  <span className="hidden sm:inline">Clear All</span>
+                </Button>
+              )}
+              <Button onClick={openAddDialog} size="sm" className="gap-2">
+                <Plus className="h-4 w-4" />
+                <span className="hidden sm:inline">Add Entry</span>
               </Button>
-            )}
+            </div>
           </div>
         </CardHeader>
         <CardContent>

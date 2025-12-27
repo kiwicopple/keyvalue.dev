@@ -1,9 +1,10 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { Database, HardDrive, Trash2, Info } from "lucide-react"
 
 import { useDatabases } from "@/hooks/useDatabases"
+import { useDashboardHeader } from "@/components/dashboard/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -21,8 +22,17 @@ import {
 
 export default function SettingsPage() {
   const { databases, deleteDatabase, refresh } = useDatabases()
+  const { setBreadcrumbs } = useDashboardHeader()
   const [isClearDialogOpen, setIsClearDialogOpen] = useState(false)
   const [isClearing, setIsClearing] = useState(false)
+
+  // Set up header breadcrumbs
+  useEffect(() => {
+    setBreadcrumbs([{ label: "Settings" }])
+    return () => {
+      setBreadcrumbs([])
+    }
+  }, [setBreadcrumbs])
 
   const handleClearAll = useCallback(async () => {
     setIsClearing(true)
@@ -41,7 +51,7 @@ export default function SettingsPage() {
   }, [databases, deleteDatabase, refresh])
 
   return (
-    <div className="space-y-6 pt-12 lg:pt-0">
+    <div className="space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold">Settings</h1>
