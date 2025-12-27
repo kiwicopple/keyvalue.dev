@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from "react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
-import { Plus, Search, Trash2, Edit, RefreshCw, Database, Key, Clock } from "lucide-react"
+import { Plus, Search, Trash2, Edit, RefreshCw, Database, Key } from "lucide-react"
 
 import { useKVStore } from "@/hooks/useKVStore"
 import { useDatabases } from "@/hooks/useDatabases"
@@ -12,15 +12,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import {
   Dialog,
   DialogContent,
@@ -39,12 +30,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip"
 import type { Database as DatabaseType } from "@/lib/storage"
-
-function formatDate(timestamp: number): string {
-  return new Date(timestamp).toLocaleString()
-}
 
 function formatRelativeTime(timestamp: number): string {
   const now = Date.now()
@@ -214,255 +200,136 @@ export default function DatabasePage() {
 
   if (isLoadingDb) {
     return (
-      <div className="flex items-center justify-center py-24">
-        <RefreshCw className="h-6 w-6 animate-spin text-primary" />
+      <div className="flex items-center justify-center py-12">
+        <RefreshCw className="h-5 w-5 animate-spin text-muted-foreground" />
       </div>
     )
   }
 
   if (!database) {
     return (
-      <div className="space-y-6">
-        <Card className="border-border/50">
-          <CardContent className="py-12">
-            <div className="text-center">
-              <Database className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-lg font-medium mb-2">Database not found</h3>
-              <p className="text-muted-foreground mb-4">
-                The database you&apos;re looking for doesn&apos;t exist or has been deleted.
-              </p>
-              <Link href="/dashboard">
-                <Button>Back to Databases</Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="text-center py-12">
+        <Database className="h-8 w-8 mx-auto text-muted-foreground/50 mb-3" />
+        <p className="text-sm text-muted-foreground mb-4">Database not found</p>
+        <Button asChild size="sm" variant="outline">
+          <Link href="/dashboard">Back to Databases</Link>
+        </Button>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
-      {/* Stats Cards */}
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
-        <Card className="gradient-bg-subtle border-border/50">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Entries</CardTitle>
-            <Database className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{entries.length}</div>
-          </CardContent>
-        </Card>
-        <Card className="gradient-bg-subtle border-border/50">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Storage</CardTitle>
-            <Key className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">LocalStorage</div>
-            <p className="text-xs text-muted-foreground mt-1">Browser storage</p>
-          </CardContent>
-        </Card>
-        <Card className="gradient-bg-subtle border-border/50">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Last Updated</CardTitle>
-            <Clock className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {entries.length > 0 ? formatRelativeTime(entries[0].updatedAt) : "N/A"}
-            </div>
-          </CardContent>
-        </Card>
+    <div className="space-y-4">
+      {/* Search and Actions Bar */}
+      <div className="flex items-center gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search keys and values..."
+            value={searchQuery}
+            onChange={(e) => handleSearch(e.target.value)}
+            className="pl-9 h-9"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          {entries.length > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsClearDialogOpen(true)}
+              className="text-destructive hover:text-destructive h-9"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          )}
+          <Button onClick={openAddDialog} size="sm" className="h-9">
+            <Plus className="h-4 w-4 mr-1" />
+            Add
+          </Button>
+        </div>
       </div>
 
-      {/* Search and Actions */}
-      <Card className="border-border/50">
-        <CardHeader>
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-            <div>
-              <CardTitle>Key-Value Store</CardTitle>
-              <CardDescription className="mt-1">
-                Manage key-value pairs in this database
-              </CardDescription>
-            </div>
-            <div className="flex items-center gap-2">
-              {entries.length > 0 && (
+      {/* Error State */}
+      {error && (
+        <div className="text-sm text-destructive px-3 py-2 border border-destructive/30 rounded-md">
+          {error}
+        </div>
+      )}
+
+      {/* Loading State */}
+      {isLoading && (
+        <div className="flex items-center justify-center py-12">
+          <RefreshCw className="h-5 w-5 animate-spin text-muted-foreground" />
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!isLoading && entries.length === 0 && (
+        <div className="text-center py-12">
+          <Key className="h-8 w-8 mx-auto text-muted-foreground/50 mb-3" />
+          <p className="text-sm text-muted-foreground mb-4">
+            {searchQuery ? "No entries match your search" : "No entries yet"}
+          </p>
+          {!searchQuery && (
+            <Button onClick={openAddDialog} size="sm" variant="outline">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Entry
+            </Button>
+          )}
+        </div>
+      )}
+
+      {/* Entries List */}
+      {!isLoading && entries.length > 0 && (
+        <div className="border border-border/60 rounded-lg divide-y divide-border/60">
+          {entries.map((entry) => (
+            <div
+              key={entry.key}
+              className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors group"
+            >
+              <Key className="h-4 w-4 text-muted-foreground shrink-0" />
+              <button
+                onClick={() => openViewDialog(entry.key, entry.value)}
+                className="flex-1 min-w-0 text-left"
+              >
+                <div className="flex items-center gap-2">
+                  <code className="font-medium text-sm">{entry.key}</code>
+                  <span className="text-xs text-muted-foreground shrink-0">
+                    {formatRelativeTime(entry.updatedAt)}
+                  </span>
+                </div>
+                <p className="text-sm text-muted-foreground truncate mt-0.5">
+                  {truncateValue(entry.value, 80)}
+                </p>
+              </button>
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsClearDialogOpen(true)}
-                  className="gap-2 text-destructive hover:text-destructive"
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    openEditDialog(entry.key, entry.value)
+                  }}
                 >
-                  <Trash2 className="h-4 w-4" />
-                  <span className="hidden sm:inline">Clear All</span>
+                  <Edit className="h-3.5 w-3.5" />
                 </Button>
-              )}
-              <Button onClick={openAddDialog} size="sm" className="gap-2">
-                <Plus className="h-4 w-4" />
-                <span className="hidden sm:inline">Add Entry</span>
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {/* Search Input */}
-          <div className="relative mb-4">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search keys and values..."
-              value={searchQuery}
-              onChange={(e) => handleSearch(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-
-          {/* Error State */}
-          {error && (
-            <div className="bg-destructive/10 border border-destructive/30 text-destructive rounded-md p-4 mb-4">
-              {error}
-            </div>
-          )}
-
-          {/* Loading State */}
-          {isLoading && (
-            <div className="flex items-center justify-center py-12">
-              <RefreshCw className="h-6 w-6 animate-spin text-primary" />
-            </div>
-          )}
-
-          {/* Empty State */}
-          {!isLoading && entries.length === 0 && (
-            <div className="text-center py-12">
-              <Database className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-lg font-medium mb-2">No entries yet</h3>
-              <p className="text-muted-foreground mb-4">
-                {searchQuery ? "No entries match your search" : "Get started by adding your first key-value pair"}
-              </p>
-              {!searchQuery && (
-                <Button onClick={openAddDialog} className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  Add Entry
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-destructive hover:text-destructive"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    openDeleteDialog(entry.key, entry.value)
+                  }}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
                 </Button>
-              )}
+              </div>
             </div>
-          )}
-
-          {/* Table - Desktop */}
-          {!isLoading && entries.length > 0 && (
-            <div className="hidden md:block rounded-md border border-border/50 overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow className="hover:bg-transparent border-border/50">
-                    <TableHead className="w-[200px]">Key</TableHead>
-                    <TableHead>Value</TableHead>
-                    <TableHead className="w-[150px]">Updated</TableHead>
-                    <TableHead className="w-[100px] text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {entries.map((entry) => (
-                    <TableRow key={entry.key} className="border-border/50">
-                      <TableCell className="font-medium">
-                        <code className="text-primary bg-primary/10 px-1.5 py-0.5 rounded text-sm">
-                          {entry.key}
-                        </code>
-                      </TableCell>
-                      <TableCell>
-                        <button
-                          onClick={() => openViewDialog(entry.key, entry.value)}
-                          className="text-left hover:text-primary transition-colors cursor-pointer"
-                        >
-                          <code className="text-sm">{truncateValue(entry.value)}</code>
-                        </button>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground text-sm">
-                        <Tooltip>
-                          <TooltipTrigger>{formatRelativeTime(entry.updatedAt)}</TooltipTrigger>
-                          <TooltipContent>{formatDate(entry.updatedAt)}</TooltipContent>
-                        </Tooltip>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => openEditDialog(entry.key, entry.value)}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Edit</TooltipContent>
-                          </Tooltip>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => openDeleteDialog(entry.key, entry.value)}
-                              >
-                                <Trash2 className="h-4 w-4 text-destructive" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Delete</TooltipContent>
-                          </Tooltip>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-
-          {/* Cards - Mobile */}
-          {!isLoading && entries.length > 0 && (
-            <div className="md:hidden space-y-3">
-              {entries.map((entry) => (
-                <Card key={entry.key} className="border-border/50">
-                  <CardContent className="pt-4">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <code className="text-primary bg-primary/10 px-1.5 py-0.5 rounded text-sm font-medium">
-                          {entry.key}
-                        </code>
-                        <button
-                          onClick={() => openViewDialog(entry.key, entry.value)}
-                          className="mt-2 text-sm text-muted-foreground block text-left hover:text-foreground transition-colors w-full"
-                        >
-                          <code className="break-all">{truncateValue(entry.value, 100)}</code>
-                        </button>
-                        <p className="text-xs text-muted-foreground mt-2">
-                          {formatRelativeTime(entry.updatedAt)}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-1 flex-shrink-0">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => openEditDialog(entry.key, entry.value)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => openDeleteDialog(entry.key, entry.value)}
-                        >
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+          ))}
+        </div>
+      )}
 
       {/* Add Entry Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>

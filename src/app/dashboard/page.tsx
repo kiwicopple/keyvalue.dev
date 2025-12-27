@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Dialog,
   DialogContent,
@@ -29,7 +28,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip"
 
 function formatRelativeTime(timestamp: number): string {
   const now = Date.now()
@@ -126,21 +124,10 @@ export default function DashboardPage() {
   }, [])
 
   return (
-    <div className="space-y-6">
-      {/* Stats */}
-      <Card className="gradient-bg-subtle border-border/50">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Total Databases</CardTitle>
-          <Database className="h-4 w-4 text-primary" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{databases.length}</div>
-        </CardContent>
-      </Card>
-
+    <div className="space-y-4">
       {/* Error State */}
       {error && (
-        <div className="bg-destructive/10 border border-destructive/30 text-destructive rounded-md p-4">
+        <div className="text-sm text-destructive px-3 py-2 border border-destructive/30 rounded-md">
           {error}
         </div>
       )}
@@ -148,101 +135,75 @@ export default function DashboardPage() {
       {/* Loading State */}
       {isLoading && (
         <div className="flex items-center justify-center py-12">
-          <RefreshCw className="h-6 w-6 animate-spin text-primary" />
+          <RefreshCw className="h-5 w-5 animate-spin text-muted-foreground" />
         </div>
       )}
 
       {/* Empty State */}
       {!isLoading && databases.length === 0 && (
-        <Card className="border-border/50">
-          <CardContent className="py-12">
-            <div className="text-center">
-              <Database className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-lg font-medium mb-2">No databases yet</h3>
-              <p className="text-muted-foreground mb-4">
-                Get started by creating your first database
-              </p>
-              <Button asChild className="gap-2">
-                <Link href="/dashboard/new">
-                  <Plus className="h-4 w-4" />
-                  Create Database
-                </Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="text-center py-12">
+          <Database className="h-8 w-8 mx-auto text-muted-foreground/50 mb-3" />
+          <p className="text-sm text-muted-foreground mb-4">No databases yet</p>
+          <Button asChild size="sm" variant="outline">
+            <Link href="/dashboard/new">
+              <Plus className="h-4 w-4 mr-2" />
+              Create Database
+            </Link>
+          </Button>
+        </div>
       )}
 
       {/* Database List */}
       {!isLoading && databases.length > 0 && (
-        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <div className="border border-border/60 rounded-lg divide-y divide-border/60">
           {databases.map((db) => (
-            <Card key={db.id} className="border-border/50 hover:border-primary/30 transition-colors group">
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1 min-w-0">
-                    <CardTitle className="text-lg truncate">{db.name}</CardTitle>
-                    {db.description && (
-                      <CardDescription className="mt-1 line-clamp-2">
-                        {db.description}
-                      </CardDescription>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1 ml-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={(e) => {
-                            e.preventDefault()
-                            openEditDialog(db.id, db.name, db.description)
-                          }}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Edit</TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={(e) => {
-                            e.preventDefault()
-                            openDeleteDialog(db.id, db.name)
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Delete</TooltipContent>
-                    </Tooltip>
-                  </div>
+            <div
+              key={db.id}
+              className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors group"
+            >
+              <Database className="h-4 w-4 text-muted-foreground shrink-0" />
+              <Link
+                href={`/dashboard/db/${db.id}`}
+                className="flex-1 min-w-0"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="font-medium truncate">{db.name}</span>
+                  <span className="text-xs text-muted-foreground shrink-0">
+                    {formatRelativeTime(db.updatedAt)}
+                  </span>
                 </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="flex items-center justify-between">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span className="text-xs text-muted-foreground">
-                        Updated {formatRelativeTime(db.updatedAt)}
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent>{formatDate(db.updatedAt)}</TooltipContent>
-                  </Tooltip>
-                  <Link href={`/dashboard/db/${db.id}`}>
-                    <Button variant="ghost" size="sm" className="gap-1 text-primary">
-                      Open
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
+                {db.description && (
+                  <p className="text-sm text-muted-foreground truncate mt-0.5">
+                    {db.description}
+                  </p>
+                )}
+              </Link>
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    openEditDialog(db.id, db.name, db.description)
+                  }}
+                >
+                  <Edit className="h-3.5 w-3.5" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-destructive hover:text-destructive"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    openDeleteDialog(db.id, db.name)
+                  }}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground/50 shrink-0" />
+            </div>
           ))}
         </div>
       )}
