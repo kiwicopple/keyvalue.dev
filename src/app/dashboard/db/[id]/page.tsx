@@ -284,15 +284,14 @@ export default function DatabasePage() {
                 <Search className="h-4 w-4" />
               </Button>
               <div className="flex-1" />
+              <Button asChild size="sm" className="shrink-0">
+                <Link href={`/dashboard/db/${databaseId}/key/new`}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  New Entry
+                </Link>
+              </Button>
             </>
           )}
-
-          <Button asChild size="sm" className="shrink-0">
-            <Link href={`/dashboard/db/${databaseId}/key/new`}>
-              <Plus className="h-4 w-4 mr-2" />
-              New Entry
-            </Link>
-          </Button>
         </div>
       </div>
 

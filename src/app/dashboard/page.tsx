@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react"
 import Link from "next/link"
-import { Plus, Database, Trash2, Edit, RefreshCw, ChevronRight, Search, X } from "lucide-react"
+import { Plus, Database, RefreshCw, ChevronRight, Search, X } from "lucide-react"
 
 import { useDatabases } from "@/hooks/useDatabases"
 import { useDashboardHeader } from "@/components/dashboard/header"
@@ -154,16 +154,6 @@ export default function DashboardPage() {
       {/* Sticky Footer */}
       <div className="fixed bottom-0 left-0 right-0 lg:left-64 border-t border-border/60 bg-background/95 backdrop-blur-sm z-40">
         <div className="flex items-center h-14 px-4 lg:px-8 gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => refresh()}
-            disabled={isLoading}
-            className="shrink-0"
-          >
-            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-          </Button>
-
           {isFilterOpen ? (
             <div className="flex-1 flex items-center gap-2">
               <Input
@@ -196,15 +186,14 @@ export default function DashboardPage() {
                 <Search className="h-4 w-4" />
               </Button>
               <div className="flex-1" />
+              <Button asChild size="sm" className="shrink-0">
+                <Link href="/dashboard/new">
+                  <Plus className="h-4 w-4 mr-2" />
+                  New Database
+                </Link>
+              </Button>
             </>
           )}
-
-          <Button asChild size="sm" className="shrink-0">
-            <Link href="/dashboard/new">
-              <Plus className="h-4 w-4 mr-2" />
-              New Database
-            </Link>
-          </Button>
         </div>
       </div>
 
