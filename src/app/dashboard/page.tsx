@@ -91,7 +91,7 @@ export default function DashboardPage() {
   })
 
   return (
-    <div className="space-y-4 pb-20">
+    <div className="space-y-4 pb-20 overflow-x-hidden">
       {/* Page Header */}
       <div>
         <h1 className="text-xl font-semibold">Databases</h1>
@@ -128,7 +128,7 @@ export default function DashboardPage() {
 
       {/* Database List */}
       {!isLoading && databases.length > 0 && (
-        <div className="-mx-4 lg:mx-0 lg:border lg:border-border/60 lg:rounded-lg divide-y divide-border/60 border-y border-border/60 lg:border-y-0">
+        <div className="-mx-4 lg:mx-0 lg:border lg:border-border/60 lg:rounded-lg divide-y divide-border/60 border-y border-border/60 lg:border-y-0 overflow-hidden">
           {filteredDatabases.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-sm text-muted-foreground">No databases match your search</p>

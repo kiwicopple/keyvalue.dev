@@ -160,7 +160,7 @@ export default function DatabasePage() {
   }
 
   return (
-    <div className="space-y-4 pb-20">
+    <div className="space-y-4 pb-20 overflow-x-hidden">
       {/* Page Header */}
       <div className="min-w-0">
         <h1 className="text-xl font-semibold truncate">{database.name}</h1>
@@ -195,7 +195,7 @@ export default function DatabasePage() {
 
       {/* Entries List */}
       {!isLoading && entries.length > 0 && (
-        <div className="-mx-4 lg:mx-0 lg:border lg:border-border/60 lg:rounded-lg divide-y divide-border/60 border-y border-border/60 lg:border-y-0">
+        <div className="-mx-4 lg:mx-0 lg:border lg:border-border/60 lg:rounded-lg divide-y divide-border/60 border-y border-border/60 lg:border-y-0 overflow-hidden">
           {filteredEntries.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-sm text-muted-foreground">No entries match your search</p>
