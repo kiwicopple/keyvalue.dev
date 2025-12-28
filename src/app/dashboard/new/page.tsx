@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Database, HardDrive, Cloud } from "lucide-react"
+import { Database, HardDrive, Cloud, ArrowLeft } from "lucide-react"
 
 import { useDatabases } from "@/hooks/useDatabases"
 import { useDashboardHeader } from "@/components/dashboard/header"
@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
   Select,
@@ -64,7 +63,7 @@ export default function NewDatabasePage() {
   }, [name, description, createDatabase, router])
 
   return (
-    <div className="space-y-4 max-w-2xl">
+    <div className="space-y-4 pb-20">
       {/* Page Header */}
       <div>
         <h1 className="text-xl font-semibold">New Database</h1>
@@ -72,84 +71,99 @@ export default function NewDatabasePage() {
       </div>
 
       {/* Form */}
-      <Card className="border-border/50">
-        <CardHeader>
-          <CardTitle className="text-lg">Database Details</CardTitle>
-          <CardDescription>
-            Configure your new database settings
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Name */}
-          <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              placeholder="My Database"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
+      <div className="space-y-4">
+        {/* Name */}
+        <div className="space-y-2">
+          <Label htmlFor="name">Name</Label>
+          <Input
+            id="name"
+            placeholder="My Database"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
 
-          {/* Description */}
-          <div className="space-y-2">
-            <Label htmlFor="description">Description (optional)</Label>
-            <Textarea
-              id="description"
-              placeholder="A brief description of this database..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={3}
-            />
-          </div>
+        {/* Description */}
+        <div className="space-y-2">
+          <Label htmlFor="description">Description (optional)</Label>
+          <Textarea
+            id="description"
+            placeholder="A brief description of this database..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={3}
+          />
+        </div>
 
-          {/* Storage Type */}
-          <div className="space-y-2">
-            <Label htmlFor="storage-type">Storage Type</Label>
-            <Select value={storageType} onValueChange={setStorageType}>
-              <SelectTrigger id="storage-type">
-                <SelectValue placeholder="Select storage type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="localStorage">
-                  <div className="flex items-center gap-2">
-                    <HardDrive className="h-4 w-4" />
-                    <span>LocalStorage</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="s3" disabled>
-                  <div className="flex items-center gap-2">
-                    <Cloud className="h-4 w-4" />
-                    <span>AWS S3</span>
-                    <Badge variant="secondary" className="ml-2 text-xs">Coming Soon</Badge>
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-muted-foreground">
-              {storageType === "localStorage"
-                ? "Data will be stored in your browser's localStorage. Data persists across sessions but is limited to this browser."
-                : "Data will be stored in AWS S3 for server-side persistence and cross-device access."}
-            </p>
-          </div>
+        {/* Storage Type */}
+        <div className="space-y-2">
+          <Label htmlFor="storage-type">Storage Type</Label>
+          <Select value={storageType} onValueChange={setStorageType}>
+            <SelectTrigger id="storage-type">
+              <SelectValue placeholder="Select storage type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="localStorage">
+                <div className="flex items-center gap-2">
+                  <HardDrive className="h-4 w-4" />
+                  <span>LocalStorage</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="s3" disabled>
+                <div className="flex items-center gap-2">
+                  <Cloud className="h-4 w-4" />
+                  <span>AWS S3</span>
+                  <Badge variant="secondary" className="ml-2 text-xs">Coming Soon</Badge>
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">
+            {storageType === "localStorage"
+              ? "Data will be stored in your browser's localStorage. Data persists across sessions but is limited to this browser."
+              : "Data will be stored in AWS S3 for server-side persistence and cross-device access."}
+          </p>
+        </div>
 
-          {/* Error */}
-          {error && (
-            <p className="text-sm text-destructive">{error}</p>
-          )}
+        {/* Error */}
+        {error && (
+          <p className="text-sm text-destructive">{error}</p>
+        )}
+      </div>
 
-          {/* Actions */}
-          <div className="flex items-center justify-end gap-3 pt-4">
-            <Button variant="outline" asChild>
-              <Link href="/dashboard">Cancel</Link>
-            </Button>
-            <Button onClick={handleCreate} disabled={isCreating} className="gap-2">
-              <Database className="h-4 w-4" />
-              {isCreating ? "Creating..." : "Create Database"}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Sticky Footer */}
+      <div className="fixed bottom-0 left-0 right-0 lg:left-64 border-t border-border/60 bg-background/95 backdrop-blur-sm z-40">
+        <div className="flex items-center h-14 px-4 lg:px-8 gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            asChild
+            className="shrink-0"
+          >
+            <Link href="/dashboard">
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
+          </Button>
+
+          <div className="flex-1" />
+
+          <Button
+            variant="outline"
+            size="sm"
+            asChild
+            className="shrink-0"
+          >
+            <Link href="/dashboard">
+              Cancel
+            </Link>
+          </Button>
+
+          <Button onClick={handleCreate} disabled={isCreating} size="sm" className="shrink-0">
+            <Database className="h-4 w-4 mr-2" />
+            {isCreating ? "Creating..." : "Create Database"}
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }
