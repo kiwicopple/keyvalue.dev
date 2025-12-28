@@ -161,6 +161,32 @@ export default function DatabasePage() {
 
   return (
     <div className="space-y-4 pb-20 overflow-x-hidden">
+      {/* Mobile Search Bar - appears at top when filter is open */}
+      {isFilterOpen && (
+        <div className="lg:hidden -mx-4 -mt-6 mb-2 px-4 py-3 border-b border-border/60 bg-background sticky top-14 z-30">
+          <div className="flex items-center gap-2">
+            <Input
+              placeholder="Search keys and values..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="h-9 flex-1"
+              autoFocus
+            />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                setIsFilterOpen(false)
+                setSearchQuery("")
+              }}
+              className="shrink-0"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Page Header */}
       <div className="min-w-0">
         <h1 className="text-xl font-semibold truncate">{database.name}</h1>
@@ -252,8 +278,9 @@ export default function DatabasePage() {
             </DropdownMenuContent>
           </DropdownMenu>
 
+          {/* Desktop: show search in footer */}
           {isFilterOpen ? (
-            <div className="flex-1 flex items-center gap-2">
+            <div className="hidden lg:flex flex-1 items-center gap-2">
               <Input
                 placeholder="Search keys and values..."
                 value={searchQuery}
@@ -274,24 +301,23 @@ export default function DatabasePage() {
               </Button>
             </div>
           ) : (
-            <>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsFilterOpen(true)}
-                className="shrink-0"
-              >
-                <Search className="h-4 w-4" />
-              </Button>
-              <div className="flex-1" />
-              <Button asChild size="sm" className="shrink-0">
-                <Link href={`/dashboard/db/${databaseId}/key/new`}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  New Entry
-                </Link>
-              </Button>
-            </>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsFilterOpen(true)}
+              className="shrink-0"
+            >
+              <Search className="h-4 w-4" />
+            </Button>
           )}
+          <div className="flex-1 lg:hidden" />
+          {!isFilterOpen && <div className="hidden lg:block flex-1" />}
+          <Button asChild size="sm" className="shrink-0">
+            <Link href={`/dashboard/db/${databaseId}/key/new`}>
+              <Plus className="h-4 w-4 mr-2" />
+              New Entry
+            </Link>
+          </Button>
         </div>
       </div>
 
