@@ -130,7 +130,7 @@ export default function NewKeyPage() {
             value={value}
             onChange={(e) => setValue(e.target.value)}
             rows={12}
-            className="font-mono text-sm"
+            className="font-mono md:text-sm"
             placeholder="Enter value..."
           />
         </div>
