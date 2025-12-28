@@ -2,8 +2,8 @@
 
 import { useState, useCallback, useEffect } from "react"
 import Link from "next/link"
-import { useParams } from "next/navigation"
-import { Plus, Search, Trash2, Edit, RefreshCw, Database, Key, Settings, X } from "lucide-react"
+import { useParams, useRouter } from "next/navigation"
+import { Plus, Search, Trash2, Edit, RefreshCw, Database, Key, MoreHorizontal, X } from "lucide-react"
 
 import { useKVStore } from "@/hooks/useKVStore"
 import { useDatabases } from "@/hooks/useDatabases"
@@ -30,6 +30,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import type { Database as DatabaseType } from "@/lib/storage"
 
 function formatRelativeTime(timestamp: number): string {
@@ -56,7 +63,8 @@ export default function DatabasePage() {
   const databaseId = params.id as string
 
   const { entries, isLoading, error, addEntry, updateEntry, deleteEntry, clearAll, searchEntries, refresh } = useKVStore(databaseId)
-  const { getDatabase } = useDatabases()
+  const { getDatabase, updateDatabase, deleteDatabase } = useDatabases()
+  const router = useRouter()
   const { setBreadcrumbs, setDescription, setIsRefreshing, setOnRefresh } = useDashboardHeader()
 
   const [database, setDatabase] = useState<DatabaseType | null>(null)
@@ -99,18 +107,27 @@ export default function DatabasePage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
 
-  // Dialog states
+  // Entry dialog states
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [isClearDialogOpen, setIsClearDialogOpen] = useState(false)
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
 
-  // Form state
+  // Database dialog states
+  const [isEditDbDialogOpen, setIsEditDbDialogOpen] = useState(false)
+  const [isDeleteDbDialogOpen, setIsDeleteDbDialogOpen] = useState(false)
+
+  // Entry form state
   const [formKey, setFormKey] = useState("")
   const [formValue, setFormValue] = useState("")
   const [selectedEntry, setSelectedEntry] = useState<{ key: string; value: string } | null>(null)
   const [formError, setFormError] = useState("")
+
+  // Database form state
+  const [dbFormName, setDbFormName] = useState("")
+  const [dbFormDescription, setDbFormDescription] = useState("")
+  const [dbFormError, setDbFormError] = useState("")
 
   // Filter entries locally
   const filteredEntries = entries.filter((entry) => {
@@ -202,6 +219,43 @@ export default function DatabasePage() {
     setFormError("")
     setIsAddDialogOpen(true)
   }, [])
+
+  // Open edit database dialog
+  const openEditDbDialog = useCallback(() => {
+    if (database) {
+      setDbFormName(database.name)
+      setDbFormDescription(database.description || "")
+      setDbFormError("")
+      setIsEditDbDialogOpen(true)
+    }
+  }, [database])
+
+  // Handle edit database
+  const handleEditDb = useCallback(async () => {
+    if (!dbFormName.trim()) {
+      setDbFormError("Name is required")
+      return
+    }
+    try {
+      const updated = await updateDatabase(databaseId, dbFormName.trim(), dbFormDescription.trim() || undefined)
+      if (updated) {
+        setDatabase(updated)
+      }
+      setIsEditDbDialogOpen(false)
+    } catch {
+      setDbFormError("Failed to update database")
+    }
+  }, [databaseId, dbFormName, dbFormDescription, updateDatabase])
+
+  // Handle delete database
+  const handleDeleteDb = useCallback(async () => {
+    try {
+      await deleteDatabase(databaseId)
+      router.push("/dashboard")
+    } catch {
+      // Error handled by hook
+    }
+  }, [databaseId, deleteDatabase, router])
 
   if (isLoadingDb) {
     return (
@@ -306,16 +360,34 @@ export default function DatabasePage() {
       {/* Sticky Footer */}
       <div className="fixed bottom-0 left-0 right-0 lg:left-64 border-t border-border/60 bg-background/95 backdrop-blur-sm z-40">
         <div className="flex items-center h-14 px-4 lg:px-8 gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            asChild
-            className="shrink-0"
-          >
-            <Link href="/dashboard/settings">
-              <Settings className="h-4 w-4" />
-            </Link>
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="shrink-0">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem onClick={openEditDbDialog}>
+                <Edit className="h-4 w-4" />
+                Edit Database
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setIsClearDialogOpen(true)}
+                disabled={entries.length === 0}
+              >
+                <Trash2 className="h-4 w-4" />
+                Clear All Entries
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => setIsDeleteDbDialogOpen(true)}
+                className="text-destructive focus:text-destructive"
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete Database
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {isFilterOpen ? (
             <div className="flex-1 flex items-center gap-2">
@@ -495,6 +567,65 @@ export default function DatabasePage() {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleClearAll} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Clear All
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Edit Database Dialog */}
+      <Dialog open={isEditDbDialogOpen} onOpenChange={setIsEditDbDialogOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Edit Database</DialogTitle>
+            <DialogDescription>
+              Update the database name and description
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="db-name">Name</Label>
+              <Input
+                id="db-name"
+                value={dbFormName}
+                onChange={(e) => setDbFormName(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="db-description">Description (optional)</Label>
+              <Textarea
+                id="db-description"
+                value={dbFormDescription}
+                onChange={(e) => setDbFormDescription(e.target.value)}
+                rows={3}
+              />
+            </div>
+            {dbFormError && (
+              <p className="text-sm text-destructive">{dbFormError}</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditDbDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleEditDb}>Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Database Confirmation Dialog */}
+      <AlertDialog open={isDeleteDbDialogOpen} onOpenChange={setIsDeleteDbDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Database</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete <span className="font-medium text-foreground">{database?.name}</span>?
+              This will permanently delete all {entries.length} entries. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteDb} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete Database
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
