@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from "react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
-import { Plus, Search, Trash2, Edit, RefreshCw, Database, Key } from "lucide-react"
+import { Plus, Search, Trash2, Edit, RefreshCw, Database, Key, Settings, X } from "lucide-react"
 
 import { useKVStore } from "@/hooks/useKVStore"
 import { useDatabases } from "@/hooks/useDatabases"
@@ -95,7 +95,8 @@ export default function DatabasePage() {
     setIsRefreshing(isLoading)
   }, [isLoading, setIsRefreshing])
 
-  // Search state
+  // Filter state
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
 
   // Dialog states
@@ -111,11 +112,15 @@ export default function DatabasePage() {
   const [selectedEntry, setSelectedEntry] = useState<{ key: string; value: string } | null>(null)
   const [formError, setFormError] = useState("")
 
-  // Handle search
-  const handleSearch = useCallback(async (query: string) => {
-    setSearchQuery(query)
-    await searchEntries(query)
-  }, [searchEntries])
+  // Filter entries locally
+  const filteredEntries = entries.filter((entry) => {
+    if (!searchQuery) return true
+    const query = searchQuery.toLowerCase()
+    return (
+      entry.key.toLowerCase().includes(query) ||
+      entry.value.toLowerCase().includes(query)
+    )
+  })
 
   // Handle add entry
   const handleAdd = useCallback(async () => {
@@ -219,34 +224,11 @@ export default function DatabasePage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pb-20">
       {/* Page Header */}
       <div>
         <h1 className="text-xl font-semibold">{database.name}</h1>
         <p className="text-sm text-muted-foreground">{database.description || "Manage key-value entries"}</p>
-      </div>
-
-      {/* Search Bar */}
-      <div className="flex items-center gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search keys and values..."
-            value={searchQuery}
-            onChange={(e) => handleSearch(e.target.value)}
-            className="pl-9 h-9"
-          />
-        </div>
-        {entries.length > 0 && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsClearDialogOpen(true)}
-            className="text-destructive hover:text-destructive h-9"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        )}
       </div>
 
       {/* Error State */}
@@ -267,16 +249,18 @@ export default function DatabasePage() {
       {!isLoading && entries.length === 0 && (
         <div className="text-center py-12">
           <Key className="h-8 w-8 mx-auto text-muted-foreground/50 mb-3" />
-          <p className="text-sm text-muted-foreground">
-            {searchQuery ? "No entries match your search" : "No entries yet"}
-          </p>
+          <p className="text-sm text-muted-foreground">No entries yet</p>
         </div>
       )}
 
       {/* Entries List */}
       {!isLoading && entries.length > 0 && (
         <div className="-mx-4 lg:mx-0 lg:border lg:border-border/60 lg:rounded-lg divide-y divide-border/60 border-y border-border/60 lg:border-y-0">
-          {entries.map((entry) => (
+          {filteredEntries.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-sm text-muted-foreground">No entries match your search</p>
+            </div>
+          ) : filteredEntries.map((entry) => (
             <div
               key={entry.key}
               className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors group"
@@ -319,13 +303,61 @@ export default function DatabasePage() {
         </div>
       )}
 
-      {/* FAB - Add Entry */}
-      <button
-        onClick={openAddDialog}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-colors flex items-center justify-center z-40"
-      >
-        <Plus className="h-6 w-6" />
-      </button>
+      {/* Sticky Footer */}
+      <div className="fixed bottom-0 left-0 right-0 lg:left-64 border-t border-border/60 bg-background/95 backdrop-blur-sm z-40">
+        <div className="flex items-center h-14 px-4 lg:px-8 gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            asChild
+            className="shrink-0"
+          >
+            <Link href="/dashboard/settings">
+              <Settings className="h-4 w-4" />
+            </Link>
+          </Button>
+
+          {isFilterOpen ? (
+            <div className="flex-1 flex items-center gap-2">
+              <Input
+                placeholder="Search keys and values..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="h-9"
+                autoFocus
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  setIsFilterOpen(false)
+                  setSearchQuery("")
+                }}
+                className="shrink-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          ) : (
+            <>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsFilterOpen(true)}
+                className="shrink-0"
+              >
+                <Search className="h-4 w-4" />
+              </Button>
+              <div className="flex-1" />
+            </>
+          )}
+
+          <Button onClick={openAddDialog} size="sm" className="shrink-0">
+            <Plus className="h-4 w-4 mr-2" />
+            New Entry
+          </Button>
+        </div>
+      </div>
 
       {/* Add Entry Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>

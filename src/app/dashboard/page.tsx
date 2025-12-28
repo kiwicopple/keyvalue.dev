@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react"
 import Link from "next/link"
-import { Plus, Database, Trash2, Edit, RefreshCw, ChevronRight } from "lucide-react"
+import { Plus, Database, Trash2, Edit, RefreshCw, ChevronRight, Search, X } from "lucide-react"
 
 import { useDatabases } from "@/hooks/useDatabases"
 import { useDashboardHeader } from "@/components/dashboard/header"
@@ -68,6 +68,10 @@ export default function DashboardPage() {
     setIsRefreshing(isLoading)
   }, [isLoading, setIsRefreshing])
 
+  // Filter state
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
+
   // Dialog states
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
@@ -123,8 +127,18 @@ export default function DashboardPage() {
     setIsDeleteDialogOpen(true)
   }, [])
 
+  // Filter databases
+  const filteredDatabases = databases.filter((db) => {
+    if (!searchQuery) return true
+    const query = searchQuery.toLowerCase()
+    return (
+      db.name.toLowerCase().includes(query) ||
+      db.description?.toLowerCase().includes(query)
+    )
+  })
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pb-20">
       {/* Page Header */}
       <div>
         <h1 className="text-xl font-semibold">Databases</h1>
@@ -162,7 +176,11 @@ export default function DashboardPage() {
       {/* Database List */}
       {!isLoading && databases.length > 0 && (
         <div className="-mx-4 lg:mx-0 lg:border lg:border-border/60 lg:rounded-lg divide-y divide-border/60 border-y border-border/60 lg:border-y-0">
-          {databases.map((db) => (
+          {filteredDatabases.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-sm text-muted-foreground">No databases match your search</p>
+            </div>
+          ) : filteredDatabases.map((db) => (
             <div
               key={db.id}
               className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors group"
@@ -206,13 +224,62 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* FAB - New Database */}
-      <Link
-        href="/dashboard/new"
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-colors flex items-center justify-center z-40"
-      >
-        <Plus className="h-6 w-6" />
-      </Link>
+      {/* Sticky Footer */}
+      <div className="fixed bottom-0 left-0 right-0 lg:left-64 border-t border-border/60 bg-background/95 backdrop-blur-sm z-40">
+        <div className="flex items-center h-14 px-4 lg:px-8 gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => refresh()}
+            disabled={isLoading}
+            className="shrink-0"
+          >
+            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+          </Button>
+
+          {isFilterOpen ? (
+            <div className="flex-1 flex items-center gap-2">
+              <Input
+                placeholder="Search databases..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="h-9"
+                autoFocus
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  setIsFilterOpen(false)
+                  setSearchQuery("")
+                }}
+                className="shrink-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          ) : (
+            <>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsFilterOpen(true)}
+                className="shrink-0"
+              >
+                <Search className="h-4 w-4" />
+              </Button>
+              <div className="flex-1" />
+            </>
+          )}
+
+          <Button asChild size="sm" className="shrink-0">
+            <Link href="/dashboard/new">
+              <Plus className="h-4 w-4 mr-2" />
+              New Database
+            </Link>
+          </Button>
+        </div>
+      </div>
 
       {/* Edit Database Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
