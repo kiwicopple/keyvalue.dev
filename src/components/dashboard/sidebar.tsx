@@ -46,7 +46,7 @@ export function DashboardSidebar() {
       {/* Mobile overlay */}
       {mobileMenuOpen && (
         <div
-          className="lg:hidden fixed inset-0 z-40 bg-black/50"
+          className="lg:hidden fixed inset-0 z-50 bg-black/50"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
@@ -54,8 +54,10 @@ export function DashboardSidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 w-64 bg-card border-r border-border/50 transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:z-auto",
-          mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+          "fixed inset-y-0 z-50 w-64 bg-card transform transition-transform duration-200 ease-in-out",
+          "right-0 border-l border-border/50 lg:left-0 lg:right-auto lg:border-l-0 lg:border-r",
+          "lg:translate-x-0 lg:static lg:z-auto",
+          mobileMenuOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
         )}
       >
         <div className="flex flex-col h-full">
