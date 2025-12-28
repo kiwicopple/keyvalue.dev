@@ -119,8 +119,8 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Page Header */}
-      <div>
+      {/* Page Header - hidden on mobile when filter is open */}
+      <div className={cn(isFilterOpen && "hidden lg:block")}>
         <h1 className="text-xl font-semibold">Databases</h1>
         <p className="text-sm text-muted-foreground">Manage your key-value databases</p>
       </div>
