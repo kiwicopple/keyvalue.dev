@@ -8,16 +8,6 @@ import { useDatabases } from "@/hooks/useDatabases"
 import { useDashboardHeader } from "@/components/dashboard/header"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -43,12 +33,8 @@ function formatRelativeTime(timestamp: number): string {
   return "just now"
 }
 
-function formatDate(timestamp: number): string {
-  return new Date(timestamp).toLocaleString()
-}
-
 export default function DashboardPage() {
-  const { databases, isLoading, error, updateDatabase, deleteDatabase, refresh } = useDatabases()
+  const { databases, isLoading, error, deleteDatabase, refresh } = useDatabases()
   const { setBreadcrumbs, setDescription, setIsRefreshing, setOnRefresh } = useDashboardHeader()
 
   // Set up header
@@ -72,33 +58,9 @@ export default function DashboardPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
 
-  // Dialog states
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  // Delete dialog state
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-
-  // Form state
-  const [formName, setFormName] = useState("")
-  const [formDescription, setFormDescription] = useState("")
   const [selectedDatabase, setSelectedDatabase] = useState<{ id: string; name: string } | null>(null)
-  const [formError, setFormError] = useState("")
-
-  // Handle edit database
-  const handleEdit = useCallback(async () => {
-    if (!selectedDatabase || !formName.trim()) {
-      setFormError("Name is required")
-      return
-    }
-    try {
-      await updateDatabase(selectedDatabase.id, formName.trim(), formDescription.trim() || undefined)
-      setIsEditDialogOpen(false)
-      setSelectedDatabase(null)
-      setFormName("")
-      setFormDescription("")
-      setFormError("")
-    } catch {
-      setFormError("Failed to update database")
-    }
-  }, [selectedDatabase, formName, formDescription, updateDatabase])
 
   // Handle delete database
   const handleDelete = useCallback(async () => {
@@ -111,15 +73,6 @@ export default function DashboardPage() {
       // Error is handled by the hook
     }
   }, [selectedDatabase, deleteDatabase])
-
-  // Open edit dialog
-  const openEditDialog = useCallback((id: string, name: string, description?: string) => {
-    setSelectedDatabase({ id, name })
-    setFormName(name)
-    setFormDescription(description || "")
-    setFormError("")
-    setIsEditDialogOpen(true)
-  }, [])
 
   // Open delete dialog
   const openDeleteDialog = useCallback((id: string, name: string) => {
@@ -199,12 +152,11 @@ export default function DashboardPage() {
                   variant="ghost"
                   size="icon"
                   className="h-7 w-7"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    openEditDialog(db.id, db.name, db.description)
-                  }}
+                  asChild
                 >
-                  <Edit className="h-3.5 w-3.5" />
+                  <Link href={`/dashboard/db/${db.id}/edit`}>
+                    <Edit className="h-3.5 w-3.5" />
+                  </Link>
                 </Button>
                 <Button
                   variant="ghost"
@@ -280,46 +232,6 @@ export default function DashboardPage() {
           </Button>
         </div>
       </div>
-
-      {/* Edit Database Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Edit Database</DialogTitle>
-            <DialogDescription>
-              Update the database name and description
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="edit-name">Name</Label>
-              <Input
-                id="edit-name"
-                value={formName}
-                onChange={(e) => setFormName(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="edit-description">Description (optional)</Label>
-              <Textarea
-                id="edit-description"
-                value={formDescription}
-                onChange={(e) => setFormDescription(e.target.value)}
-                rows={3}
-              />
-            </div>
-            {formError && (
-              <p className="text-sm text-destructive">{formError}</p>
-            )}
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleEdit}>Save Changes</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>

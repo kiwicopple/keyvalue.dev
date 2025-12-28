@@ -10,16 +10,6 @@ import { useDatabases } from "@/hooks/useDatabases"
 import { useDashboardHeader } from "@/components/dashboard/header"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,7 +39,7 @@ export default function DatabasePage() {
   const databaseId = params.id as string
 
   const { entries, isLoading, error, deleteEntry, clearAll, refresh } = useKVStore(databaseId)
-  const { getDatabase, updateDatabase, deleteDatabase } = useDatabases()
+  const { getDatabase, deleteDatabase } = useDatabases()
   const router = useRouter()
   const { setBreadcrumbs, setDescription, setIsRefreshing, setOnRefresh } = useDashboardHeader()
 
@@ -96,16 +86,10 @@ export default function DatabasePage() {
   // Dialog states
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [isClearDialogOpen, setIsClearDialogOpen] = useState(false)
-  const [isEditDbDialogOpen, setIsEditDbDialogOpen] = useState(false)
   const [isDeleteDbDialogOpen, setIsDeleteDbDialogOpen] = useState(false)
 
   // Entry to delete
   const [entryToDelete, setEntryToDelete] = useState<string | null>(null)
-
-  // Database form state
-  const [dbFormName, setDbFormName] = useState("")
-  const [dbFormDescription, setDbFormDescription] = useState("")
-  const [dbFormError, setDbFormError] = useState("")
 
   // Filter entries locally
   const filteredEntries = entries.filter((entry) => {
@@ -144,33 +128,6 @@ export default function DatabasePage() {
     setEntryToDelete(key)
     setIsDeleteDialogOpen(true)
   }, [])
-
-  // Open edit database dialog
-  const openEditDbDialog = useCallback(() => {
-    if (database) {
-      setDbFormName(database.name)
-      setDbFormDescription(database.description || "")
-      setDbFormError("")
-      setIsEditDbDialogOpen(true)
-    }
-  }, [database])
-
-  // Handle edit database
-  const handleEditDb = useCallback(async () => {
-    if (!dbFormName.trim()) {
-      setDbFormError("Name is required")
-      return
-    }
-    try {
-      const updated = await updateDatabase(databaseId, dbFormName.trim(), dbFormDescription.trim() || undefined)
-      if (updated) {
-        setDatabase(updated)
-      }
-      setIsEditDbDialogOpen(false)
-    } catch {
-      setDbFormError("Failed to update database")
-    }
-  }, [databaseId, dbFormName, dbFormDescription, updateDatabase])
 
   // Handle delete database
   const handleDeleteDb = useCallback(async () => {
@@ -292,9 +249,11 @@ export default function DatabasePage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
-              <DropdownMenuItem onClick={openEditDbDialog}>
-                <Edit className="h-4 w-4" />
-                Edit Database
+              <DropdownMenuItem asChild>
+                <Link href={`/dashboard/db/${databaseId}/edit`}>
+                  <Edit className="h-4 w-4" />
+                  Edit Database
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setIsClearDialogOpen(true)}
@@ -395,46 +354,6 @@ export default function DatabasePage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
-      {/* Edit Database Dialog */}
-      <Dialog open={isEditDbDialogOpen} onOpenChange={setIsEditDbDialogOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Edit Database</DialogTitle>
-            <DialogDescription>
-              Update the database name and description
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="db-name">Name</Label>
-              <Input
-                id="db-name"
-                value={dbFormName}
-                onChange={(e) => setDbFormName(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="db-description">Description (optional)</Label>
-              <Textarea
-                id="db-description"
-                value={dbFormDescription}
-                onChange={(e) => setDbFormDescription(e.target.value)}
-                rows={3}
-              />
-            </div>
-            {dbFormError && (
-              <p className="text-sm text-destructive">{dbFormError}</p>
-            )}
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditDbDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleEditDb}>Save Changes</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* Delete Database Confirmation Dialog */}
       <AlertDialog open={isDeleteDbDialogOpen} onOpenChange={setIsDeleteDbDialogOpen}>
