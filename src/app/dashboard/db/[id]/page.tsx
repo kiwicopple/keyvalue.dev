@@ -162,9 +162,9 @@ export default function DatabasePage() {
   return (
     <div className="space-y-4 pb-20">
       {/* Page Header */}
-      <div>
-        <h1 className="text-xl font-semibold">{database.name}</h1>
-        <p className="text-sm text-muted-foreground">
+      <div className="min-w-0">
+        <h1 className="text-xl font-semibold truncate">{database.name}</h1>
+        <p className="text-sm text-muted-foreground truncate">
           <Link href="/dashboard" className="hover:text-foreground transition-colors">Databases</Link>
           <span className="mx-1.5">&gt;</span>
           <span className="text-muted-foreground/60">{database.name}</span>

@@ -122,9 +122,9 @@ export default function EditKeyPage() {
   return (
     <div className="space-y-4 pb-20">
       {/* Page Header */}
-      <div>
+      <div className="min-w-0">
         <h1 className="text-xl font-semibold">Edit Entry</h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground truncate">
           <Link href="/dashboard" className="hover:text-foreground transition-colors">Databases</Link>
           <span className="mx-1.5">&gt;</span>
           <Link href={`/dashboard/db/${databaseId}`} className="hover:text-foreground transition-colors">{database.name}</Link>
