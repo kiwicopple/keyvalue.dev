@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from "react"
 import Link from "next/link"
 import { Plus, Database, RefreshCw, ChevronRight, Search, X } from "lucide-react"
 
+import { cn } from "@/lib/utils"
 import { useDatabases } from "@/hooks/useDatabases"
 import { useDashboardHeader } from "@/components/dashboard/header"
 import { Button } from "@/components/ui/button"
@@ -91,10 +92,10 @@ export default function DashboardPage() {
   })
 
   return (
-    <div className="space-y-4 pb-20 overflow-x-hidden">
-      {/* Mobile Search Bar - appears at top when filter is open */}
+    <div className={cn("space-y-4 pb-20 overflow-x-hidden", isFilterOpen && "pt-14 lg:pt-0")}>
+      {/* Mobile Search Bar - fixed at top when filter is open */}
       {isFilterOpen && (
-        <div className="lg:hidden -mx-4 -mt-6 mb-2 px-4 py-3 border-b border-border/60 bg-background sticky top-14 z-30">
+        <div className="lg:hidden fixed top-14 left-0 right-0 px-4 py-3 border-b border-border/60 bg-background z-30">
           <div className="flex items-center gap-2">
             <Input
               placeholder="Search databases..."
