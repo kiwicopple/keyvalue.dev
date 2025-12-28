@@ -119,7 +119,11 @@ export default function KeyDetailPage() {
       {/* Page Header */}
       <div>
         <h1 className="text-xl font-semibold font-mono">{entry.key}</h1>
-        <p className="text-sm text-muted-foreground">Key-value entry in {database.name}</p>
+        <p className="text-sm text-muted-foreground">
+          <Link href="/dashboard" className="hover:text-foreground transition-colors">Databases</Link>
+          <span className="mx-1.5">&gt;</span>
+          <Link href={`/dashboard/db/${databaseId}`} className="hover:text-foreground transition-colors">{database.name}</Link>
+        </p>
       </div>
 
       {/* Value Display */}

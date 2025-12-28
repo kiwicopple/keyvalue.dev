@@ -124,7 +124,13 @@ export default function EditKeyPage() {
       {/* Page Header */}
       <div>
         <h1 className="text-xl font-semibold">Edit Entry</h1>
-        <p className="text-sm text-muted-foreground">Update the value for <code className="font-mono">{keyName}</code></p>
+        <p className="text-sm text-muted-foreground">
+          <Link href="/dashboard" className="hover:text-foreground transition-colors">Databases</Link>
+          <span className="mx-1.5">&gt;</span>
+          <Link href={`/dashboard/db/${databaseId}`} className="hover:text-foreground transition-colors">{database.name}</Link>
+          <span className="mx-1.5">&gt;</span>
+          <Link href={`/dashboard/db/${databaseId}/key/${encodeURIComponent(keyName)}`} className="hover:text-foreground transition-colors font-mono">{keyName}</Link>
+        </p>
       </div>
 
       {/* Form */}

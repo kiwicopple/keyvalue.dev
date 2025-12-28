@@ -164,7 +164,9 @@ export default function DatabasePage() {
       {/* Page Header */}
       <div>
         <h1 className="text-xl font-semibold">{database.name}</h1>
-        <p className="text-sm text-muted-foreground">{database.description || "Manage key-value entries"}</p>
+        <p className="text-sm text-muted-foreground">
+          <Link href="/dashboard" className="hover:text-foreground transition-colors">Databases</Link>
+        </p>
       </div>
 
       {/* Error State */}
