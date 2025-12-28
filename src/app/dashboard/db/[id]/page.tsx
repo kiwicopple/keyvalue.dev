@@ -226,7 +226,7 @@ export default function DatabasePage() {
         <p className="text-sm text-muted-foreground">{database.description || "Manage key-value entries"}</p>
       </div>
 
-      {/* Search and Actions Bar */}
+      {/* Search Bar */}
       <div className="flex items-center gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -237,22 +237,16 @@ export default function DatabasePage() {
             className="pl-9 h-9"
           />
         </div>
-        <div className="flex items-center gap-2">
-          {entries.length > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsClearDialogOpen(true)}
-              className="text-destructive hover:text-destructive h-9"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          )}
-          <Button onClick={openAddDialog} size="sm" className="h-9">
-            <Plus className="h-4 w-4 mr-1" />
-            Add
+        {entries.length > 0 && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsClearDialogOpen(true)}
+            className="text-destructive hover:text-destructive h-9"
+          >
+            <Trash2 className="h-4 w-4" />
           </Button>
-        </div>
+        )}
       </div>
 
       {/* Error State */}
@@ -273,15 +267,9 @@ export default function DatabasePage() {
       {!isLoading && entries.length === 0 && (
         <div className="text-center py-12">
           <Key className="h-8 w-8 mx-auto text-muted-foreground/50 mb-3" />
-          <p className="text-sm text-muted-foreground mb-4">
+          <p className="text-sm text-muted-foreground">
             {searchQuery ? "No entries match your search" : "No entries yet"}
           </p>
-          {!searchQuery && (
-            <Button onClick={openAddDialog} size="sm" variant="outline">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Entry
-            </Button>
-          )}
         </div>
       )}
 
@@ -330,6 +318,14 @@ export default function DatabasePage() {
           ))}
         </div>
       )}
+
+      {/* FAB - Add Entry */}
+      <button
+        onClick={openAddDialog}
+        className="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-colors flex items-center justify-center z-40"
+      >
+        <Plus className="h-6 w-6" />
+      </button>
 
       {/* Add Entry Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>

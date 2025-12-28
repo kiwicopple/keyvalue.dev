@@ -206,6 +206,14 @@ export default function DashboardPage() {
         </div>
       )}
 
+      {/* FAB - New Database */}
+      <Link
+        href="/dashboard/new"
+        className="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-colors flex items-center justify-center z-40"
+      >
+        <Plus className="h-6 w-6" />
+      </Link>
+
       {/* Edit Database Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-lg">
