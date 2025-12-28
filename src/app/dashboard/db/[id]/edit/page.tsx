@@ -106,6 +106,8 @@ export default function EditDatabasePage() {
           <Link href="/dashboard" className="hover:text-foreground transition-colors">Databases</Link>
           <span className="mx-1.5">&gt;</span>
           <Link href={`/dashboard/db/${databaseId}`} className="hover:text-foreground transition-colors">{database.name}</Link>
+          <span className="mx-1.5">&gt;</span>
+          <span className="text-muted-foreground/60">Edit</span>
         </p>
       </div>
 

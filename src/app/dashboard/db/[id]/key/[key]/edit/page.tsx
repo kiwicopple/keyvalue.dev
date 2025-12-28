@@ -130,6 +130,8 @@ export default function EditKeyPage() {
           <Link href={`/dashboard/db/${databaseId}`} className="hover:text-foreground transition-colors">{database.name}</Link>
           <span className="mx-1.5">&gt;</span>
           <Link href={`/dashboard/db/${databaseId}/key/${encodeURIComponent(keyName)}`} className="hover:text-foreground transition-colors font-mono">{keyName}</Link>
+          <span className="mx-1.5">&gt;</span>
+          <span className="text-muted-foreground/60">Edit</span>
         </p>
       </div>
 

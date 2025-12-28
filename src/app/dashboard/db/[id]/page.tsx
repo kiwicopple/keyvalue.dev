@@ -166,6 +166,8 @@ export default function DatabasePage() {
         <h1 className="text-xl font-semibold">{database.name}</h1>
         <p className="text-sm text-muted-foreground">
           <Link href="/dashboard" className="hover:text-foreground transition-colors">Databases</Link>
+          <span className="mx-1.5">&gt;</span>
+          <span className="text-muted-foreground/60">{database.name}</span>
         </p>
       </div>
 
