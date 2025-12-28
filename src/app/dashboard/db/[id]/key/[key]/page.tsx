@@ -117,9 +117,9 @@ export default function KeyDetailPage() {
   return (
     <div className="space-y-4 pb-20">
       {/* Page Header */}
-      <div>
-        <h1 className="text-xl font-semibold font-mono">{entry.key}</h1>
-        <p className="text-sm text-muted-foreground">
+      <div className="min-w-0">
+        <h1 className="text-xl font-semibold font-mono truncate">{entry.key}</h1>
+        <p className="text-sm text-muted-foreground truncate">
           <Link href="/dashboard" className="hover:text-foreground transition-colors">Databases</Link>
           <span className="mx-1.5">&gt;</span>
           <Link href={`/dashboard/db/${databaseId}`} className="hover:text-foreground transition-colors">{database.name}</Link>
@@ -129,9 +129,9 @@ export default function KeyDetailPage() {
       </div>
 
       {/* Value Display */}
-      <div className="-mx-4 lg:mx-0">
+      <div className="-mx-4 lg:mx-0 overflow-hidden">
         <div className="border-y border-border/60 lg:border lg:rounded-lg bg-muted/20">
-          <pre className="p-4 text-sm whitespace-pre-wrap break-all overflow-auto max-h-[60vh]">
+          <pre className="p-4 text-sm whitespace-pre-wrap break-words overflow-y-auto overflow-x-hidden max-h-[60vh]">
             {entry.value || <span className="text-muted-foreground italic">Empty value</span>}
           </pre>
         </div>
