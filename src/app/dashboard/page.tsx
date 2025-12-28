@@ -134,44 +134,19 @@ export default function DashboardPage() {
               <p className="text-sm text-muted-foreground">No databases match your search</p>
             </div>
           ) : filteredDatabases.map((db) => (
-            <div
+            <Link
               key={db.id}
-              className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors group"
+              href={`/dashboard/db/${db.id}`}
+              className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors"
             >
-              <Link
-                href={`/dashboard/db/${db.id}`}
-                className="flex-1 min-w-0"
-              >
+              <div className="flex-1 min-w-0">
                 <span className="font-medium truncate block">{db.name}</span>
                 <span className="text-sm text-muted-foreground truncate block mt-0.5">
                   {db.description || `Updated ${formatRelativeTime(db.updatedAt)}`}
                 </span>
-              </Link>
-              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7"
-                  asChild
-                >
-                  <Link href={`/dashboard/db/${db.id}/edit`}>
-                    <Edit className="h-3.5 w-3.5" />
-                  </Link>
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7 text-destructive hover:text-destructive"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    openDeleteDialog(db.id, db.name)
-                  }}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
               </div>
               <ChevronRight className="h-4 w-4 text-muted-foreground/50 shrink-0" />
-            </div>
+            </Link>
           ))}
         </div>
       )}

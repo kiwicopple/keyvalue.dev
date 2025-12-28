@@ -201,44 +201,19 @@ export default function DatabasePage() {
               <p className="text-sm text-muted-foreground">No entries match your search</p>
             </div>
           ) : filteredEntries.map((entry) => (
-            <div
+            <Link
               key={entry.key}
-              className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors group"
+              href={`/dashboard/db/${databaseId}/key/${encodeURIComponent(entry.key)}`}
+              className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors"
             >
-              <Link
-                href={`/dashboard/db/${databaseId}/key/${encodeURIComponent(entry.key)}`}
-                className="flex-1 min-w-0"
-              >
+              <div className="flex-1 min-w-0">
                 <code className="font-medium text-sm block truncate">{entry.key}</code>
                 <span className="text-sm text-muted-foreground truncate block mt-0.5">
                   {truncateValue(entry.value, 80)}
                 </span>
-              </Link>
-              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7"
-                  asChild
-                >
-                  <Link href={`/dashboard/db/${databaseId}/key/${encodeURIComponent(entry.key)}/edit`}>
-                    <Edit className="h-3.5 w-3.5" />
-                  </Link>
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7 text-destructive hover:text-destructive"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    openDeleteDialog(entry.key)
-                  }}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
               </div>
               <ChevronRight className="h-4 w-4 text-muted-foreground/50 shrink-0" />
-            </div>
+            </Link>
           ))}
         </div>
       )}
