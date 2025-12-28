@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from "react"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
-import { Plus, Search, Trash2, Edit, RefreshCw, Database, Key, MoreHorizontal, X } from "lucide-react"
+import { Plus, Search, Trash2, Edit, RefreshCw, Database, Key, MoreHorizontal, X, ChevronRight } from "lucide-react"
 
 import { useKVStore } from "@/hooks/useKVStore"
 import { useDatabases } from "@/hooks/useDatabases"
@@ -39,20 +39,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import type { Database as DatabaseType } from "@/lib/storage"
 
-function formatRelativeTime(timestamp: number): string {
-  const now = Date.now()
-  const diff = now - timestamp
-  const seconds = Math.floor(diff / 1000)
-  const minutes = Math.floor(seconds / 60)
-  const hours = Math.floor(minutes / 60)
-  const days = Math.floor(hours / 24)
-
-  if (days > 0) return `${days}d ago`
-  if (hours > 0) return `${hours}h ago`
-  if (minutes > 0) return `${minutes}m ago`
-  return "just now"
-}
-
 function truncateValue(value: string, maxLength: number = 50): string {
   if (value.length <= maxLength) return value
   return value.substring(0, maxLength) + "..."
@@ -62,7 +48,7 @@ export default function DatabasePage() {
   const params = useParams()
   const databaseId = params.id as string
 
-  const { entries, isLoading, error, addEntry, updateEntry, deleteEntry, clearAll, searchEntries, refresh } = useKVStore(databaseId)
+  const { entries, isLoading, error, deleteEntry, clearAll, refresh } = useKVStore(databaseId)
   const { getDatabase, updateDatabase, deleteDatabase } = useDatabases()
   const router = useRouter()
   const { setBreadcrumbs, setDescription, setIsRefreshing, setOnRefresh } = useDashboardHeader()
@@ -107,22 +93,14 @@ export default function DatabasePage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
 
-  // Entry dialog states
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  // Dialog states
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [isClearDialogOpen, setIsClearDialogOpen] = useState(false)
-  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
-
-  // Database dialog states
   const [isEditDbDialogOpen, setIsEditDbDialogOpen] = useState(false)
   const [isDeleteDbDialogOpen, setIsDeleteDbDialogOpen] = useState(false)
 
-  // Entry form state
-  const [formKey, setFormKey] = useState("")
-  const [formValue, setFormValue] = useState("")
-  const [selectedEntry, setSelectedEntry] = useState<{ key: string; value: string } | null>(null)
-  const [formError, setFormError] = useState("")
+  // Entry to delete
+  const [entryToDelete, setEntryToDelete] = useState<string | null>(null)
 
   // Database form state
   const [dbFormName, setDbFormName] = useState("")
@@ -139,48 +117,17 @@ export default function DatabasePage() {
     )
   })
 
-  // Handle add entry
-  const handleAdd = useCallback(async () => {
-    if (!formKey.trim()) {
-      setFormError("Key is required")
-      return
-    }
-    try {
-      await addEntry(formKey.trim(), formValue)
-      setIsAddDialogOpen(false)
-      setFormKey("")
-      setFormValue("")
-      setFormError("")
-    } catch {
-      setFormError("Failed to add entry")
-    }
-  }, [formKey, formValue, addEntry])
-
-  // Handle edit entry
-  const handleEdit = useCallback(async () => {
-    if (!selectedEntry) return
-    try {
-      await updateEntry(selectedEntry.key, formValue)
-      setIsEditDialogOpen(false)
-      setSelectedEntry(null)
-      setFormValue("")
-      setFormError("")
-    } catch {
-      setFormError("Failed to update entry")
-    }
-  }, [selectedEntry, formValue, updateEntry])
-
   // Handle delete entry
-  const handleDelete = useCallback(async () => {
-    if (!selectedEntry) return
+  const handleDeleteEntry = useCallback(async () => {
+    if (!entryToDelete) return
     try {
-      await deleteEntry(selectedEntry.key)
+      await deleteEntry(entryToDelete)
       setIsDeleteDialogOpen(false)
-      setSelectedEntry(null)
+      setEntryToDelete(null)
     } catch {
       // Error is handled by the hook
     }
-  }, [selectedEntry, deleteEntry])
+  }, [entryToDelete, deleteEntry])
 
   // Handle clear all
   const handleClearAll = useCallback(async () => {
@@ -192,32 +139,10 @@ export default function DatabasePage() {
     }
   }, [clearAll])
 
-  // Open edit dialog
-  const openEditDialog = useCallback((key: string, value: string) => {
-    setSelectedEntry({ key, value })
-    setFormValue(value)
-    setFormError("")
-    setIsEditDialogOpen(true)
-  }, [])
-
   // Open delete dialog
-  const openDeleteDialog = useCallback((key: string, value: string) => {
-    setSelectedEntry({ key, value })
+  const openDeleteDialog = useCallback((key: string) => {
+    setEntryToDelete(key)
     setIsDeleteDialogOpen(true)
-  }, [])
-
-  // Open view dialog
-  const openViewDialog = useCallback((key: string, value: string) => {
-    setSelectedEntry({ key, value })
-    setIsViewDialogOpen(true)
-  }, [])
-
-  // Open add dialog
-  const openAddDialog = useCallback(() => {
-    setFormKey("")
-    setFormValue("")
-    setFormError("")
-    setIsAddDialogOpen(true)
   }, [])
 
   // Open edit database dialog
@@ -319,26 +244,25 @@ export default function DatabasePage() {
               key={entry.key}
               className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors group"
             >
-              <button
-                onClick={() => openViewDialog(entry.key, entry.value)}
-                className="flex-1 min-w-0 text-left"
+              <Link
+                href={`/dashboard/db/${databaseId}/key/${encodeURIComponent(entry.key)}`}
+                className="flex-1 min-w-0"
               >
                 <code className="font-medium text-sm block truncate">{entry.key}</code>
                 <span className="text-sm text-muted-foreground truncate block mt-0.5">
                   {truncateValue(entry.value, 80)}
                 </span>
-              </button>
+              </Link>
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <Button
                   variant="ghost"
                   size="icon"
                   className="h-7 w-7"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    openEditDialog(entry.key, entry.value)
-                  }}
+                  asChild
                 >
-                  <Edit className="h-3.5 w-3.5" />
+                  <Link href={`/dashboard/db/${databaseId}/key/${encodeURIComponent(entry.key)}/edit`}>
+                    <Edit className="h-3.5 w-3.5" />
+                  </Link>
                 </Button>
                 <Button
                   variant="ghost"
@@ -346,12 +270,13 @@ export default function DatabasePage() {
                   className="h-7 w-7 text-destructive hover:text-destructive"
                   onClick={(e) => {
                     e.stopPropagation()
-                    openDeleteDialog(entry.key, entry.value)
+                    openDeleteDialog(entry.key)
                   }}
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground/50 shrink-0" />
             </div>
           ))}
         </div>
@@ -424,129 +349,28 @@ export default function DatabasePage() {
             </>
           )}
 
-          <Button onClick={openAddDialog} size="sm" className="shrink-0">
-            <Plus className="h-4 w-4 mr-2" />
-            New Entry
+          <Button asChild size="sm" className="shrink-0">
+            <Link href={`/dashboard/db/${databaseId}/key/new`}>
+              <Plus className="h-4 w-4 mr-2" />
+              New Entry
+            </Link>
           </Button>
         </div>
       </div>
 
-      {/* Add Entry Dialog */}
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Add New Entry</DialogTitle>
-            <DialogDescription>
-              Create a new key-value pair in this database
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="add-key">Key</Label>
-              <Input
-                id="add-key"
-                placeholder="my-key"
-                value={formKey}
-                onChange={(e) => setFormKey(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="add-value">Value</Label>
-              <Textarea
-                id="add-value"
-                placeholder="Enter value..."
-                value={formValue}
-                onChange={(e) => setFormValue(e.target.value)}
-                rows={4}
-              />
-            </div>
-            {formError && (
-              <p className="text-sm text-destructive">{formError}</p>
-            )}
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleAdd}>Add Entry</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Entry Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Edit Entry</DialogTitle>
-            <DialogDescription>
-              Update the value for <code className="text-primary">{selectedEntry?.key}</code>
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="edit-value">Value</Label>
-              <Textarea
-                id="edit-value"
-                value={formValue}
-                onChange={(e) => setFormValue(e.target.value)}
-                rows={6}
-              />
-            </div>
-            {formError && (
-              <p className="text-sm text-destructive">{formError}</p>
-            )}
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleEdit}>Save Changes</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* View Entry Dialog */}
-      <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>
-              <code className="text-primary bg-primary/10 px-2 py-1 rounded">{selectedEntry?.key}</code>
-            </DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
-            <div className="bg-muted/50 rounded-md p-4 max-h-[400px] overflow-auto">
-              <pre className="text-sm whitespace-pre-wrap break-all">{selectedEntry?.value}</pre>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsViewDialogOpen(false)}>
-              Close
-            </Button>
-            <Button onClick={() => {
-              setIsViewDialogOpen(false)
-              if (selectedEntry) {
-                openEditDialog(selectedEntry.key, selectedEntry.value)
-              }
-            }}>
-              Edit
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Confirmation Dialog */}
+      {/* Delete Entry Confirmation Dialog */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Entry</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete <code className="text-primary">{selectedEntry?.key}</code>?
+              Are you sure you want to delete <code className="text-primary">{entryToDelete}</code>?
               This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogAction onClick={handleDeleteEntry} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
