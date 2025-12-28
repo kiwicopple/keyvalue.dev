@@ -26,13 +26,18 @@ export function DashboardSidebar() {
 
   return (
     <>
-      {/* Mobile menu button */}
-      <div className="lg:hidden fixed top-4 left-4 z-50">
+      {/* Mobile header */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 h-14 flex items-center justify-between px-4 border-b border-border/50 bg-background/95 backdrop-blur-sm">
+        <Link href="/" className="flex items-center gap-2">
+          <div className="p-1.5 rounded-lg bg-primary/10">
+            <Database className="h-4 w-4 text-primary" />
+          </div>
+          <span className="font-bold">keyvalue.dev</span>
+        </Link>
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="bg-background/80 backdrop-blur-sm"
         >
           {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </Button>
