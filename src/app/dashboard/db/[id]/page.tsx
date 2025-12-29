@@ -190,11 +190,11 @@ export default function DatabasePage() {
 
       {/* Page Header - hidden on mobile when filter is open */}
       <div className={cn("min-w-0", isFilterOpen && "hidden lg:block")}>
-        <h1 className="text-base font-medium truncate">{database.name}</h1>
+        <h1 className="text-base font-medium font-mono truncate">{database.name}</h1>
         <p className="text-xs text-muted-foreground truncate mt-1">
           <Link href="/dashboard" className="hover:text-foreground transition-colors">Databases</Link>
           <span className="mx-1.5">/</span>
-          <span className="text-muted-foreground/60">{database.name}</span>
+          <span className="text-muted-foreground/60 font-mono">{database.name}</span>
         </p>
       </div>
 
@@ -234,8 +234,8 @@ export default function DatabasePage() {
               className="flex items-center gap-3 px-4 py-3 hover:bg-accent/50 active:bg-accent transition-colors"
             >
               <div className="flex-1 min-w-0">
-                <code className="text-sm block truncate">{entry.key}</code>
-                <span className="text-xs text-muted-foreground truncate block mt-0.5">
+                <code className="text-sm font-mono block truncate">{entry.key}</code>
+                <span className="text-xs text-muted-foreground font-mono truncate block mt-0.5">
                   {truncateValue(entry.value, 80)}
                 </span>
               </div>
@@ -333,7 +333,7 @@ export default function DatabasePage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Entry</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete <code className="text-primary">{entryToDelete}</code>?
+              Are you sure you want to delete <code className="text-primary font-mono">{entryToDelete}</code>?
               This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -371,7 +371,7 @@ export default function DatabasePage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Database</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete <span className="font-medium text-foreground">{database?.name}</span>?
+              Are you sure you want to delete <span className="font-medium font-mono text-foreground">{database?.name}</span>?
               This will permanently delete all {entries.length} entries. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>

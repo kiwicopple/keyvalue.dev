@@ -110,7 +110,7 @@ export default function NewKeyPage() {
         <p className="text-xs text-muted-foreground truncate">
           <Link href="/dashboard" className="hover:text-foreground transition-colors">Databases</Link>
           <span className="mx-1.5">/</span>
-          <Link href={`/dashboard/db/${databaseId}`} className="hover:text-foreground transition-colors">{database.name}</Link>
+          <Link href={`/dashboard/db/${databaseId}`} className="hover:text-foreground transition-colors font-mono">{database.name}</Link>
           <span className="mx-1.5">/</span>
           <span className="text-muted-foreground/60">New Entry</span>
         </p>

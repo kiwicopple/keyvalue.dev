@@ -30,7 +30,7 @@ export function DashboardSidebar() {
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 h-14 flex items-center justify-between px-4 border-b border-border bg-background">
         <Link href="/" className="flex items-center gap-2">
           <Database className="h-4 w-4 text-primary" />
-          <span className="font-medium text-sm">keyvalue.dev</span>
+          <span className="font-medium text-sm font-mono">keyvalue.dev</span>
         </Link>
         <Button
           variant="ghost"
@@ -63,7 +63,7 @@ export function DashboardSidebar() {
           <div className="flex items-center gap-2 px-4 h-14 border-b border-border">
             <Link href="/" className="flex items-center gap-2 hover:opacity-70 transition-opacity">
               <Database className="h-4 w-4 text-primary" />
-              <span className="font-medium text-sm">keyvalue.dev</span>
+              <span className="font-medium text-sm font-mono">keyvalue.dev</span>
             </Link>
           </div>
 

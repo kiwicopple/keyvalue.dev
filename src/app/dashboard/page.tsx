@@ -167,7 +167,7 @@ export default function DashboardPage() {
               className="flex items-center gap-3 px-4 py-3 hover:bg-accent/50 active:bg-accent transition-colors"
             >
               <div className="flex-1 min-w-0">
-                <span className="text-sm truncate block">{db.name}</span>
+                <span className="text-sm font-mono truncate block">{db.name}</span>
                 <span className="text-xs text-muted-foreground truncate block mt-0.5">
                   {db.description || `Updated ${formatRelativeTime(db.updatedAt)}`}
                 </span>
@@ -230,7 +230,7 @@ export default function DashboardPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Database</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete <span className="font-medium text-foreground">{selectedDatabase?.name}</span>?
+              Are you sure you want to delete <span className="font-medium font-mono text-foreground">{selectedDatabase?.name}</span>?
               This will permanently delete all key-value pairs stored in this database.
               This action cannot be undone.
             </AlertDialogDescription>

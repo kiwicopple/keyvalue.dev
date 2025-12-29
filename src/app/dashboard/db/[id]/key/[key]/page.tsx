@@ -122,7 +122,7 @@ export default function KeyDetailPage() {
         <p className="text-xs text-muted-foreground truncate">
           <Link href="/dashboard" className="hover:text-foreground transition-colors">Databases</Link>
           <span className="mx-1.5">/</span>
-          <Link href={`/dashboard/db/${databaseId}`} className="hover:text-foreground transition-colors">{database.name}</Link>
+          <Link href={`/dashboard/db/${databaseId}`} className="hover:text-foreground transition-colors font-mono">{database.name}</Link>
           <span className="mx-1.5">/</span>
           <span className="text-muted-foreground/60 font-mono">{entry.key}</span>
         </p>
@@ -131,7 +131,7 @@ export default function KeyDetailPage() {
       {/* Value Display */}
       <div className="-mx-4 lg:mx-0 overflow-hidden">
         <div className="border-y border-border lg:border bg-muted/10">
-          <pre className="p-4 text-sm whitespace-pre-wrap break-words overflow-y-auto overflow-x-hidden max-h-[60vh]">
+          <pre className="p-4 text-sm font-mono whitespace-pre-wrap break-words overflow-y-auto overflow-x-hidden max-h-[60vh]">
             {entry.value || <span className="text-muted-foreground italic">Empty value</span>}
           </pre>
         </div>
