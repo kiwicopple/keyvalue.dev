@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from "react"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
-import { Plus, Search, Trash2, Edit, RefreshCw, Database, Key, MoreHorizontal, X, ChevronRight } from "lucide-react"
+import { Plus, Search, Trash2, Edit, RefreshCw, Database, Key, MoreHorizontal, X, ChevronRight, ArrowLeft } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { useKVStore } from "@/hooks/useKVStore"
@@ -248,6 +248,11 @@ export default function DatabasePage() {
       {/* Sticky Footer */}
       <div className="fixed bottom-0 left-0 right-0 lg:left-64 border-t border-border/60 bg-background/95 backdrop-blur-sm z-40">
         <div className="flex items-center h-14 px-4 lg:px-8 gap-2">
+          <Button variant="ghost" size="icon" asChild className="shrink-0">
+            <Link href="/dashboard">
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
+          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="shrink-0">
