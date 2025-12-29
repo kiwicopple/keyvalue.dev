@@ -54,7 +54,7 @@ export default function SettingsPage() {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-sm font-medium">Settings</h1>
+        <h1 className="text-base font-medium">Settings</h1>
         <p className="text-xs text-muted-foreground mt-1">Manage your dashboard preferences and data</p>
       </div>
 

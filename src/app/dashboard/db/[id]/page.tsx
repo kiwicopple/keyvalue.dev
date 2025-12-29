@@ -190,7 +190,7 @@ export default function DatabasePage() {
 
       {/* Page Header - hidden on mobile when filter is open */}
       <div className={cn("min-w-0", isFilterOpen && "hidden lg:block")}>
-        <h1 className="text-sm font-medium truncate">{database.name}</h1>
+        <h1 className="text-base font-medium truncate">{database.name}</h1>
         <p className="text-xs text-muted-foreground truncate mt-1">
           <Link href="/dashboard" className="hover:text-foreground transition-colors">Databases</Link>
           <span className="mx-1.5">/</span>

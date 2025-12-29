@@ -66,7 +66,7 @@ export default function NewDatabasePage() {
     <div className="space-y-4 pb-20">
       {/* Page Header */}
       <div>
-        <h1 className="text-sm font-medium">New Database</h1>
+        <h1 className="text-base font-medium">New Database</h1>
         <p className="text-xs text-muted-foreground">Set up a new key-value database to store your data</p>
       </div>
 
