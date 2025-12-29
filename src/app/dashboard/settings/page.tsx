@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useCallback, useEffect } from "react"
-import { Database, HardDrive, Trash2, Info } from "lucide-react"
+import { Trash2, Info } from "lucide-react"
 
 import { useDatabases } from "@/hooks/useDatabases"
 import { useDashboardHeader } from "@/components/dashboard/header"
@@ -59,49 +59,6 @@ export default function SettingsPage() {
         <h1 className="text-xl font-semibold">Settings</h1>
         <p className="text-sm text-muted-foreground">Manage your dashboard preferences and data</p>
       </div>
-
-      {/* Storage Info */}
-      <Card className="border-border/50">
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-primary/10">
-              <HardDrive className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <CardTitle>Storage</CardTitle>
-              <CardDescription>Current storage configuration</CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between py-2">
-            <div className="space-y-1">
-              <p className="text-sm font-medium">Storage Type</p>
-              <p className="text-sm text-muted-foreground">Where your data is stored</p>
-            </div>
-            <Badge variant="secondary" className="gap-1.5">
-              <Database className="h-3 w-3" />
-              LocalStorage
-            </Badge>
-          </div>
-          <Separator />
-          <div className="flex items-center justify-between py-2">
-            <div className="space-y-1">
-              <p className="text-sm font-medium">Total Databases</p>
-              <p className="text-sm text-muted-foreground">Number of databases created</p>
-            </div>
-            <span className="text-sm font-medium">{databases.length}</span>
-          </div>
-          <Separator />
-          <div className="flex items-center justify-between py-2">
-            <div className="space-y-1">
-              <p className="text-sm font-medium">Storage Location</p>
-              <p className="text-sm text-muted-foreground">Data persists in your browser</p>
-            </div>
-            <span className="text-sm text-muted-foreground">Browser</span>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* About */}
       <Card className="border-border/50">
