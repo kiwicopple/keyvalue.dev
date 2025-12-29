@@ -61,11 +61,11 @@ export function DashboardHeaderProvider({ children }: { children: ReactNode }) {
 // Header Component
 export function DashboardHeader() {
   return (
-    <div className="hidden lg:block border-b border-border/50 bg-background/50 backdrop-blur-sm sticky top-0 z-30">
+    <div className="hidden lg:block border-b border-border bg-background sticky top-0 z-30">
       {/* Main Header Bar */}
-      <div className="flex items-center justify-between h-14 px-4 lg:px-8">
+      <div className="flex items-center justify-between h-14 px-6">
         <div className="flex items-center gap-4">
-          <h1 className="text-lg font-semibold">Dashboard</h1>
+          <span className="text-sm text-muted-foreground">Dashboard</span>
         </div>
       </div>
     </div>

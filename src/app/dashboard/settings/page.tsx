@@ -6,9 +6,7 @@ import { Trash2, Info } from "lucide-react"
 import { useDatabases } from "@/hooks/useDatabases"
 import { useDashboardHeader } from "@/components/dashboard/header"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -53,79 +51,64 @@ export default function SettingsPage() {
   }, [databases, deleteDatabase, refresh])
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-xl font-semibold">Settings</h1>
-        <p className="text-sm text-muted-foreground">Manage your dashboard preferences and data</p>
+        <h1 className="text-sm font-medium">Settings</h1>
+        <p className="text-xs text-muted-foreground mt-1">Manage your dashboard preferences and data</p>
       </div>
 
       {/* About */}
-      <Card className="border-border/50">
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-primary/10">
-              <Info className="h-5 w-5 text-primary" />
-            </div>
+      <div className="border border-border">
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
+          <Info className="h-4 w-4 text-muted-foreground" />
+          <span className="text-sm font-medium">About</span>
+        </div>
+        <div className="px-4 py-3 space-y-3">
+          <div className="flex items-center justify-between py-1">
             <div>
-              <CardTitle>About</CardTitle>
-              <CardDescription>Information about keyvalue.dev</CardDescription>
+              <p className="text-sm">Version</p>
+              <p className="text-xs text-muted-foreground">Current dashboard version</p>
             </div>
+            <Badge variant="outline" className="text-xs">0.1.0</Badge>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between py-2">
-            <div className="space-y-1">
-              <p className="text-sm font-medium">Version</p>
-              <p className="text-sm text-muted-foreground">Current dashboard version</p>
-            </div>
-            <Badge variant="outline">0.1.0</Badge>
-          </div>
-          <Separator />
-          <div className="py-2">
-            <p className="text-sm font-medium mb-1">Description</p>
-            <p className="text-sm text-muted-foreground">
+          <div className="border-t border-border pt-3">
+            <p className="text-sm mb-1">Description</p>
+            <p className="text-xs text-muted-foreground leading-relaxed">
               keyvalue.dev is a simple key-value storage solution. This dashboard allows you to manage
-              multiple databases using your browser&apos;s localStorage. In the future, S3 storage support
-              will be added for server-side persistence.
+              multiple databases using your browser&apos;s localStorage.
             </p>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Danger Zone */}
-      <Card className="border-destructive/30">
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-destructive/10">
-              <Trash2 className="h-5 w-5 text-destructive" />
-            </div>
+      <div className="border border-destructive/50">
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-destructive/50">
+          <Trash2 className="h-4 w-4 text-destructive" />
+          <span className="text-sm font-medium text-destructive">Danger Zone</span>
+        </div>
+        <div className="px-4 py-3">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <CardTitle className="text-destructive">Danger Zone</CardTitle>
-              <CardDescription>Irreversible actions</CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-2">
-            <div className="space-y-1">
-              <p className="text-sm font-medium">Delete All Data</p>
-              <p className="text-sm text-muted-foreground">
-                Permanently delete all databases and their entries. This action cannot be undone.
+              <p className="text-sm">Delete All Data</p>
+              <p className="text-xs text-muted-foreground">
+                Permanently delete all databases and their entries.
               </p>
             </div>
             <Button
               variant="destructive"
+              size="sm"
               onClick={() => setIsClearDialogOpen(true)}
               disabled={databases.length === 0}
               className="gap-2 shrink-0"
             >
-              <Trash2 className="h-4 w-4" />
-              Delete All Data
+              <Trash2 className="h-3 w-3" />
+              Delete All
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Clear All Confirmation Dialog */}
       <AlertDialog open={isClearDialogOpen} onOpenChange={setIsClearDialogOpen}>
@@ -142,7 +125,7 @@ export default function SettingsPage() {
             <AlertDialogAction
               onClick={handleClearAll}
               disabled={isClearing}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive text-destructive-foreground hover:opacity-90"
             >
               {isClearing ? "Deleting..." : "Delete All Data"}
             </AlertDialogAction>

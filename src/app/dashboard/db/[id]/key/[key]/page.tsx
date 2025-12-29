@@ -118,19 +118,19 @@ export default function KeyDetailPage() {
     <div className="space-y-4 pb-20">
       {/* Page Header */}
       <div className="min-w-0">
-        <h1 className="text-xl font-semibold font-mono truncate">{entry.key}</h1>
-        <p className="text-sm text-muted-foreground truncate">
+        <h1 className="text-sm font-medium font-mono truncate">{entry.key}</h1>
+        <p className="text-xs text-muted-foreground truncate">
           <Link href="/dashboard" className="hover:text-foreground transition-colors">Databases</Link>
-          <span className="mx-1.5">&gt;</span>
+          <span className="mx-1.5">/</span>
           <Link href={`/dashboard/db/${databaseId}`} className="hover:text-foreground transition-colors">{database.name}</Link>
-          <span className="mx-1.5">&gt;</span>
+          <span className="mx-1.5">/</span>
           <span className="text-muted-foreground/60 font-mono">{entry.key}</span>
         </p>
       </div>
 
       {/* Value Display */}
       <div className="-mx-4 lg:mx-0 overflow-hidden">
-        <div className="border-y border-border/60 lg:border lg:rounded-lg bg-muted/20">
+        <div className="border-y border-border lg:border bg-muted/10">
           <pre className="p-4 text-sm whitespace-pre-wrap break-words overflow-y-auto overflow-x-hidden max-h-[60vh]">
             {entry.value || <span className="text-muted-foreground italic">Empty value</span>}
           </pre>
@@ -138,8 +138,8 @@ export default function KeyDetailPage() {
       </div>
 
       {/* Sticky Footer */}
-      <div className="fixed bottom-0 left-0 right-0 lg:left-64 border-t border-border/60 bg-background/95 backdrop-blur-sm z-40">
-        <div className="flex items-center h-14 px-4 lg:px-8 gap-2">
+      <div className="fixed bottom-0 left-0 right-0 lg:left-56 border-t border-border bg-background z-40">
+        <div className="flex items-center h-12 px-4 lg:px-6 gap-2">
           <Button
             variant="ghost"
             size="icon"

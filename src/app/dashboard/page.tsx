@@ -92,10 +92,10 @@ export default function DashboardPage() {
   })
 
   return (
-    <div className={cn("space-y-4 pb-20 overflow-x-hidden", isFilterOpen && "pt-14 lg:pt-0")}>
+    <div className={cn("space-y-6 pb-20 overflow-x-hidden", isFilterOpen && "pt-14 lg:pt-0")}>
       {/* Mobile Search Bar - fixed at top when filter is open */}
       {isFilterOpen && (
-        <div className="lg:hidden fixed top-14 left-0 right-0 px-4 py-3 border-b border-border/60 bg-background z-30">
+        <div className="lg:hidden fixed top-14 left-0 right-0 px-4 py-3 border-b border-border bg-background z-30">
           <div className="flex items-center gap-2">
             <Input
               placeholder="Search databases..."
@@ -121,13 +121,13 @@ export default function DashboardPage() {
 
       {/* Page Header - hidden on mobile when filter is open */}
       <div className={cn(isFilterOpen && "hidden lg:block")}>
-        <h1 className="text-xl font-semibold">Databases</h1>
-        <p className="text-sm text-muted-foreground">Manage your key-value databases</p>
+        <h1 className="text-sm font-medium">Databases</h1>
+        <p className="text-xs text-muted-foreground mt-1">Manage your key-value databases</p>
       </div>
 
       {/* Error State */}
       {error && (
-        <div className="text-sm text-destructive px-3 py-2 border border-destructive/30 rounded-md">
+        <div className="text-sm text-destructive px-3 py-2 border border-destructive/50">
           {error}
         </div>
       )}
@@ -135,14 +135,14 @@ export default function DashboardPage() {
       {/* Loading State */}
       {isLoading && (
         <div className="flex items-center justify-center py-12">
-          <RefreshCw className="h-5 w-5 animate-spin text-muted-foreground" />
+          <RefreshCw className="h-4 w-4 animate-spin text-muted-foreground" />
         </div>
       )}
 
       {/* Empty State */}
       {!isLoading && databases.length === 0 && (
-        <div className="text-center py-12">
-          <Database className="h-8 w-8 mx-auto text-muted-foreground/50 mb-3" />
+        <div className="text-center py-12 border border-border">
+          <Database className="h-6 w-6 mx-auto text-muted-foreground mb-3" />
           <p className="text-sm text-muted-foreground mb-4">No databases yet</p>
           <Button asChild size="sm" variant="outline">
             <Link href="/dashboard/new">
@@ -155,7 +155,7 @@ export default function DashboardPage() {
 
       {/* Database List */}
       {!isLoading && databases.length > 0 && (
-        <div className="-mx-4 lg:mx-0 lg:border lg:border-border/60 lg:rounded-lg divide-y divide-border/60 border-y border-border/60 lg:border-y-0 overflow-hidden">
+        <div className="-mx-4 lg:mx-0 lg:border lg:border-border divide-y divide-border border-y border-border lg:border-y-0 overflow-hidden">
           {filteredDatabases.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-sm text-muted-foreground">No databases match your search</p>
@@ -164,23 +164,23 @@ export default function DashboardPage() {
             <Link
               key={db.id}
               href={`/dashboard/db/${db.id}`}
-              className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 active:bg-muted/50 transition-colors"
+              className="flex items-center gap-3 px-4 py-3 hover:bg-accent/50 active:bg-accent transition-colors"
             >
               <div className="flex-1 min-w-0">
-                <span className="font-medium truncate block">{db.name}</span>
-                <span className="text-sm text-muted-foreground truncate block mt-0.5">
+                <span className="text-sm truncate block">{db.name}</span>
+                <span className="text-xs text-muted-foreground truncate block mt-0.5">
                   {db.description || `Updated ${formatRelativeTime(db.updatedAt)}`}
                 </span>
               </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground/50 shrink-0" />
+              <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
             </Link>
           ))}
         </div>
       )}
 
       {/* Sticky Footer */}
-      <div className="fixed bottom-0 left-0 right-0 lg:left-64 border-t border-border/60 bg-background/95 backdrop-blur-sm z-40">
-        <div className="flex items-center h-14 px-4 lg:px-8 gap-2">
+      <div className="fixed bottom-0 left-0 right-0 lg:left-56 border-t border-border bg-background z-40">
+        <div className="flex items-center h-12 px-4 lg:px-6 gap-2">
           {/* Desktop: show search in footer */}
           {isFilterOpen ? (
             <div className="hidden lg:flex flex-1 items-center gap-2">
@@ -188,7 +188,7 @@ export default function DashboardPage() {
                 placeholder="Search databases..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-9"
+                className="h-8"
                 autoFocus
               />
               <Button

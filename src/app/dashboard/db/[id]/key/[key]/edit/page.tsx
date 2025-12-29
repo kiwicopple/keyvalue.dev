@@ -123,14 +123,14 @@ export default function EditKeyPage() {
     <div className="space-y-4 pb-20">
       {/* Page Header */}
       <div className="min-w-0">
-        <h1 className="text-xl font-semibold">Edit Entry</h1>
-        <p className="text-sm text-muted-foreground truncate">
+        <h1 className="text-sm font-medium">Edit Entry</h1>
+        <p className="text-xs text-muted-foreground truncate">
           <Link href="/dashboard" className="hover:text-foreground transition-colors">Databases</Link>
-          <span className="mx-1.5">&gt;</span>
+          <span className="mx-1.5">/</span>
           <Link href={`/dashboard/db/${databaseId}`} className="hover:text-foreground transition-colors">{database.name}</Link>
-          <span className="mx-1.5">&gt;</span>
+          <span className="mx-1.5">/</span>
           <Link href={`/dashboard/db/${databaseId}/key/${encodeURIComponent(keyName)}`} className="hover:text-foreground transition-colors font-mono">{keyName}</Link>
-          <span className="mx-1.5">&gt;</span>
+          <span className="mx-1.5">/</span>
           <span className="text-muted-foreground/60">Edit</span>
         </p>
       </div>
@@ -139,7 +139,7 @@ export default function EditKeyPage() {
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="key">Key</Label>
-          <div className="px-3 py-2 bg-muted/50 border border-border/60 rounded-md text-sm font-mono">
+          <div className="px-3 py-2 bg-muted/50 border border-border text-sm font-mono">
             {keyName}
           </div>
         </div>
@@ -162,8 +162,8 @@ export default function EditKeyPage() {
       </div>
 
       {/* Sticky Footer */}
-      <div className="fixed bottom-0 left-0 right-0 lg:left-64 border-t border-border/60 bg-background/95 backdrop-blur-sm z-40">
-        <div className="flex items-center h-14 px-4 lg:px-8 gap-2">
+      <div className="fixed bottom-0 left-0 right-0 lg:left-56 border-t border-border bg-background z-40">
+        <div className="flex items-center h-12 px-4 lg:px-6 gap-2">
           <Button
             variant="ghost"
             size="icon"
