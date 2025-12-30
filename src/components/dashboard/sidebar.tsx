@@ -54,7 +54,7 @@ export function DashboardSidebar() {
         className={cn(
           "fixed inset-y-0 z-50 w-56 bg-background transform transition-transform duration-200 ease-in-out",
           "right-0 border-l border-border lg:left-0 lg:right-auto lg:border-l-0 lg:border-r",
-          "lg:translate-x-0 lg:static lg:z-auto",
+          "lg:translate-x-0 lg:static lg:z-auto lg:h-screen lg:sticky lg:top-0",
           mobileMenuOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
         )}
       >
@@ -90,10 +90,10 @@ export function DashboardSidebar() {
           </nav>
 
           {/* Back to home */}
-          <div className="px-2 py-3 border-t border-border">
+          <div className="h-12 flex items-center px-4 border-t border-border">
             <Link
               href="/"
-              className="block px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Back to Home
             </Link>
