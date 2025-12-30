@@ -52,7 +52,7 @@ export function DashboardSidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 z-50 w-56 bg-card transform transition-transform duration-200 ease-in-out",
+          "fixed inset-y-0 z-50 w-56 bg-background transform transition-transform duration-200 ease-in-out",
           "right-0 border-l border-border lg:left-0 lg:right-auto lg:border-l-0 lg:border-r",
           "lg:translate-x-0 lg:static lg:z-auto",
           mobileMenuOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
