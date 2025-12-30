@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Plus, Database, RefreshCw, ChevronRight, Search, X } from "lucide-react"
+import { Plus, Database, RefreshCw, Search, X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { useDatabases } from "@/hooks/useDatabases"
@@ -132,15 +132,12 @@ export default function DashboardPage() {
             <Link
               key={db.id}
               href={`/dashboard/db/${db.id}`}
-              className="flex items-center gap-4 px-4 lg:px-6 py-3 hover:bg-accent/50 active:bg-accent transition-colors group"
+              className="block px-4 lg:px-6 py-3 hover:bg-accent/50 active:bg-accent transition-colors"
             >
-              <div className="flex-1 min-w-0 flex items-center gap-4">
-                <span className="text-sm font-mono truncate">{db.name}</span>
-                <span className="text-xs text-muted-foreground truncate hidden sm:block">
-                  {db.description || `Updated ${formatRelativeTime(db.updatedAt)}`}
-                </span>
+              <div className="text-sm font-mono truncate">{db.name}</div>
+              <div className="text-xs text-muted-foreground truncate mt-0.5">
+                {db.description || `Updated ${formatRelativeTime(db.updatedAt)}`}
               </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
             </Link>
           ))}
         </div>

@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from "react"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
-import { Plus, Search, Trash2, Edit, RefreshCw, Database, Key, MoreHorizontal, X, ChevronRight, ArrowLeft } from "lucide-react"
+import { Plus, Search, Trash2, Edit, RefreshCw, Database, Key, MoreHorizontal, X, ArrowLeft } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { useKVStore } from "@/hooks/useKVStore"
@@ -209,15 +209,12 @@ export default function DatabasePage() {
             <Link
               key={entry.key}
               href={`/dashboard/db/${databaseId}/key/${encodeURIComponent(entry.key)}`}
-              className="flex items-center gap-4 px-4 lg:px-6 py-3 hover:bg-accent/50 active:bg-accent transition-colors group"
+              className="block px-4 lg:px-6 py-3 hover:bg-accent/50 active:bg-accent transition-colors"
             >
-              <div className="flex-1 min-w-0 flex items-center gap-4">
-                <code className="text-sm font-mono truncate">{entry.key}</code>
-                <span className="text-xs text-muted-foreground font-mono truncate hidden sm:block">
-                  {truncateValue(entry.value, 80)}
-                </span>
-              </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <code className="text-sm font-mono block truncate">{entry.key}</code>
+              <span className="text-xs text-muted-foreground font-mono block truncate mt-0.5">
+                {truncateValue(entry.value, 80)}
+              </span>
             </Link>
           ))}
         </div>
