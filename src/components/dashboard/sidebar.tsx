@@ -88,16 +88,6 @@ export function DashboardSidebar() {
               )
             })}
           </nav>
-
-          {/* Back to home */}
-          <div className="h-12 flex items-center px-4 border-t border-border">
-            <Link
-              href="/"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Back to Home
-            </Link>
-          </div>
         </div>
       </aside>
     </>
