@@ -2,15 +2,15 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Database, Settings, Home, Menu, X } from "lucide-react"
+import { Database, Menu, X } from "lucide-react"
 import { useState } from "react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
 const navigation = [
-  { name: "Databases", href: "/dashboard", icon: Database },
-  { name: "Settings", href: "/dashboard/settings", icon: Settings },
+  { name: "Databases", href: "/dashboard" },
+  { name: "Settings", href: "/dashboard/settings" },
 ]
 
 export function DashboardSidebar() {
@@ -77,13 +77,12 @@ export function DashboardSidebar() {
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
                   className={cn(
-                    "flex items-center gap-2 px-2 py-1.5 text-sm transition-colors",
+                    "block px-2 py-1.5 text-sm transition-colors",
                     active
-                      ? "text-primary bg-primary/5 border-l-2 border-primary -ml-px"
+                      ? "text-foreground bg-muted"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  <item.icon className="h-4 w-4" />
                   {item.name}
                 </Link>
               )
@@ -94,9 +93,8 @@ export function DashboardSidebar() {
           <div className="px-2 py-3 border-t border-border">
             <Link
               href="/"
-              className="flex items-center gap-2 px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="block px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
-              <Home className="h-4 w-4" />
               Back to Home
             </Link>
           </div>
