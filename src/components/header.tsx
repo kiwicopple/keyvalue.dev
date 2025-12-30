@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Database, Menu, X } from "lucide-react";
 
@@ -28,8 +29,8 @@ export function Header() {
           <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground" asChild>
             <a href="#quickstart">Quick Start</a>
           </Button>
-          <Button size="sm" className="ml-2 glow-sm" asChild>
-            <a href="#quickstart">Get Started</a>
+          <Button size="sm" className="ml-2" asChild>
+            <Link href="/dashboard">Get Started</Link>
           </Button>
         </div>
 
@@ -59,7 +60,7 @@ export function Header() {
               <a href="#quickstart" onClick={() => setMobileMenuOpen(false)}>Quick Start</a>
             </Button>
             <Button className="mt-2" asChild>
-              <a href="#quickstart" onClick={() => setMobileMenuOpen(false)}>Get Started</a>
+              <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>Get Started</Link>
             </Button>
           </div>
         </div>

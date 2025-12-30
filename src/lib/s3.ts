@@ -6,7 +6,6 @@ import {
   DeleteObjectCommand,
   HeadObjectCommand,
   PutBucketTaggingCommand,
-  BucketLocationConstraint,
   type S3ClientConfig,
 } from '@aws-sdk/client-s3';
 import { config } from './config';

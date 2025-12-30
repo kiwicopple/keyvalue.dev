@@ -1,5 +1,6 @@
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Header } from "@/components/header";
 import { Database, Zap, Shield, Code, ArrowRight, Terminal, CheckCircle, Github } from "lucide-react";
@@ -28,9 +29,9 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="glow text-base px-8" asChild>
-                <a href="#quickstart">
+                <Link href="/dashboard">
                   Get Started <ArrowRight className="ml-2 h-4 w-4" />
-                </a>
+                </Link>
               </Button>
               <Button size="lg" variant="outline" className="text-base px-8 border-border/50" asChild>
                 <a href="#api">
@@ -233,9 +234,9 @@ export default function Home() {
             Start storing data in minutes. No complex setup, no maintenance headaches.
           </p>
           <Button size="lg" className="glow text-base px-8" asChild>
-            <a href="#quickstart">
+            <Link href="/dashboard">
               Start Building <ArrowRight className="ml-2 h-4 w-4" />
-            </a>
+            </Link>
           </Button>
         </div>
       </section>
