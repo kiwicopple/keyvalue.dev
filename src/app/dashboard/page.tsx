@@ -60,7 +60,7 @@ export default function DashboardPage() {
   })
 
   return (
-    <div className={cn("space-y-6 pb-20 overflow-x-hidden", isFilterOpen && "pt-14 lg:pt-0")}>
+    <div className={cn("pb-20", isFilterOpen && "pt-14 lg:pt-0")}>
       {/* Mobile Search Bar - fixed at top when filter is open */}
       {isFilterOpen && (
         <div className="lg:hidden fixed top-14 left-0 right-0 px-4 py-3 border-b border-border bg-background z-30">
@@ -88,14 +88,14 @@ export default function DashboardPage() {
       )}
 
       {/* Page Header - hidden on mobile when filter is open */}
-      <div className={cn(isFilterOpen && "hidden lg:block")}>
+      <div className={cn("px-4 lg:px-6 py-6", isFilterOpen && "hidden lg:block")}>
         <h1 className="text-base font-medium">Databases</h1>
         <p className="text-xs text-muted-foreground mt-1">Manage your key-value databases</p>
       </div>
 
       {/* Error State */}
       {error && (
-        <div className="text-sm text-destructive px-3 py-2 border border-destructive/50">
+        <div className="text-sm text-destructive px-4 lg:px-6 py-2 border-y border-destructive/50">
           {error}
         </div>
       )}
@@ -109,7 +109,7 @@ export default function DashboardPage() {
 
       {/* Empty State */}
       {!isLoading && databases.length === 0 && (
-        <div className="text-center py-12 border border-border">
+        <div className="text-center py-12 mx-4 lg:mx-6 border border-border">
           <Database className="h-6 w-6 mx-auto text-muted-foreground mb-3" />
           <p className="text-sm text-muted-foreground mb-4">No databases yet</p>
           <Button asChild size="sm" variant="outline">
@@ -123,7 +123,7 @@ export default function DashboardPage() {
 
       {/* Database List */}
       {!isLoading && databases.length > 0 && (
-        <div className="-mx-4 lg:-mx-6 divide-y divide-border border-y border-border">
+        <div className="divide-y divide-border border-y border-border">
           {filteredDatabases.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-sm text-muted-foreground">No databases match your search</p>

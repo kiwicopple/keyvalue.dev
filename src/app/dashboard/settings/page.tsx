@@ -51,7 +51,7 @@ export default function SettingsPage() {
   }, [databases, deleteDatabase, refresh])
 
   return (
-    <div className="space-y-6">
+    <div className="px-4 lg:px-6 py-6 space-y-6">
       {/* Page Header */}
       <div>
         <h1 className="text-base font-medium">Settings</h1>

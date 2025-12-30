@@ -63,15 +63,15 @@ export default function NewDatabasePage() {
   }, [name, description, createDatabase, router])
 
   return (
-    <div className="space-y-4 pb-20">
+    <div className="pb-20">
       {/* Page Header */}
-      <div>
+      <div className="px-4 lg:px-6 py-6">
         <h1 className="text-base font-medium">New Database</h1>
         <p className="text-xs text-muted-foreground">Set up a new key-value database to store your data</p>
       </div>
 
       {/* Form */}
-      <div className="space-y-4">
+      <div className="px-4 lg:px-6 space-y-4">
         {/* Name */}
         <div className="space-y-2">
           <Label htmlFor="name">Name</Label>

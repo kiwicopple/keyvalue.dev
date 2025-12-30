@@ -103,9 +103,9 @@ export default function NewKeyPage() {
   }
 
   return (
-    <div className="space-y-4 pb-20">
+    <div className="pb-20">
       {/* Page Header */}
-      <div className="min-w-0">
+      <div className="px-4 lg:px-6 py-6 min-w-0">
         <h1 className="text-base font-medium">New Entry</h1>
         <p className="text-xs text-muted-foreground truncate">
           <Link href="/dashboard" className="hover:text-foreground transition-colors">Databases</Link>
@@ -117,7 +117,7 @@ export default function NewKeyPage() {
       </div>
 
       {/* Form */}
-      <div className="space-y-4">
+      <div className="px-4 lg:px-6 space-y-4">
         <div className="space-y-2">
           <Label htmlFor="key">Key</Label>
           <Input
