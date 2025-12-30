@@ -123,7 +123,7 @@ export default function DashboardPage() {
 
       {/* Database List */}
       {!isLoading && databases.length > 0 && (
-        <div className="-mx-4 lg:mx-0 lg:border lg:border-border divide-y divide-border border-y border-border lg:border-y-0 overflow-hidden">
+        <div className="-mx-4 lg:-mx-6 divide-y divide-border border-y border-border">
           {filteredDatabases.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-sm text-muted-foreground">No databases match your search</p>
@@ -132,15 +132,15 @@ export default function DashboardPage() {
             <Link
               key={db.id}
               href={`/dashboard/db/${db.id}`}
-              className="flex items-center gap-3 px-4 py-3 hover:bg-accent/50 active:bg-accent transition-colors"
+              className="flex items-center gap-4 px-4 lg:px-6 py-3 hover:bg-accent/50 active:bg-accent transition-colors group"
             >
-              <div className="flex-1 min-w-0">
-                <span className="text-sm font-mono truncate block">{db.name}</span>
-                <span className="text-xs text-muted-foreground truncate block mt-0.5">
+              <div className="flex-1 min-w-0 flex items-center gap-4">
+                <span className="text-sm font-mono truncate">{db.name}</span>
+                <span className="text-xs text-muted-foreground truncate hidden sm:block">
                   {db.description || `Updated ${formatRelativeTime(db.updatedAt)}`}
                 </span>
               </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+              <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
             </Link>
           ))}
         </div>

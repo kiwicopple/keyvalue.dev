@@ -200,7 +200,7 @@ export default function DatabasePage() {
 
       {/* Entries List */}
       {!isLoading && entries.length > 0 && (
-        <div className="-mx-4 lg:mx-0 lg:border lg:border-border divide-y divide-border border-y border-border lg:border-y-0 overflow-hidden">
+        <div className="-mx-4 lg:-mx-6 divide-y divide-border border-y border-border">
           {filteredEntries.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-sm text-muted-foreground">No entries match your search</p>
@@ -209,15 +209,15 @@ export default function DatabasePage() {
             <Link
               key={entry.key}
               href={`/dashboard/db/${databaseId}/key/${encodeURIComponent(entry.key)}`}
-              className="flex items-center gap-3 px-4 py-3 hover:bg-accent/50 active:bg-accent transition-colors"
+              className="flex items-center gap-4 px-4 lg:px-6 py-3 hover:bg-accent/50 active:bg-accent transition-colors group"
             >
-              <div className="flex-1 min-w-0">
-                <code className="text-sm font-mono block truncate">{entry.key}</code>
-                <span className="text-xs text-muted-foreground font-mono truncate block mt-0.5">
+              <div className="flex-1 min-w-0 flex items-center gap-4">
+                <code className="text-sm font-mono truncate">{entry.key}</code>
+                <span className="text-xs text-muted-foreground font-mono truncate hidden sm:block">
                   {truncateValue(entry.value, 80)}
                 </span>
               </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+              <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
             </Link>
           ))}
         </div>
