@@ -27,7 +27,7 @@ describe('config utilities', () => {
     });
 
     it('does not throw in non-production when env vars are missing', () => {
-      process.env.NODE_ENV = 'development';
+      (process.env as { NODE_ENV?: string }).NODE_ENV = 'development';
       delete process.env.AWS_REGION;
       delete process.env.AWS_ZONE_ID;
       delete process.env.AWS_ACCESS_KEY_ID;
@@ -37,7 +37,7 @@ describe('config utilities', () => {
     });
 
     it('throws in production when env vars are missing', () => {
-      process.env.NODE_ENV = 'production';
+      (process.env as { NODE_ENV?: string }).NODE_ENV = 'production';
       delete process.env.AWS_REGION;
       delete process.env.AWS_ZONE_ID;
       delete process.env.AWS_ACCESS_KEY_ID;
