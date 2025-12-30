@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useEffect } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Plus, Database, RefreshCw, ChevronRight, Search, X } from "lucide-react"
 
@@ -9,16 +9,6 @@ import { useDatabases } from "@/hooks/useDatabases"
 import { useDashboardHeader } from "@/components/dashboard/header"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
 
 function formatRelativeTime(timestamp: number): string {
   const now = Date.now()
@@ -35,7 +25,7 @@ function formatRelativeTime(timestamp: number): string {
 }
 
 export default function DashboardPage() {
-  const { databases, isLoading, error, deleteDatabase, refresh } = useDatabases()
+  const { databases, isLoading, error, refresh } = useDatabases()
   const { setBreadcrumbs, setDescription, setIsRefreshing, setOnRefresh } = useDashboardHeader()
 
   // Set up header
@@ -58,28 +48,6 @@ export default function DashboardPage() {
   // Filter state
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
-
-  // Delete dialog state
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [selectedDatabase, setSelectedDatabase] = useState<{ id: string; name: string } | null>(null)
-
-  // Handle delete database
-  const handleDelete = useCallback(async () => {
-    if (!selectedDatabase) return
-    try {
-      await deleteDatabase(selectedDatabase.id)
-      setIsDeleteDialogOpen(false)
-      setSelectedDatabase(null)
-    } catch {
-      // Error is handled by the hook
-    }
-  }, [selectedDatabase, deleteDatabase])
-
-  // Open delete dialog
-  const openDeleteDialog = useCallback((id: string, name: string) => {
-    setSelectedDatabase({ id, name })
-    setIsDeleteDialogOpen(true)
-  }, [])
 
   // Filter databases
   const filteredDatabases = databases.filter((db) => {
@@ -223,26 +191,6 @@ export default function DashboardPage() {
           </Button>
         </div>
       </div>
-
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Database</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete <span className="font-medium font-mono text-foreground">{selectedDatabase?.name}</span>?
-              This will permanently delete all key-value pairs stored in this database.
-              This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Delete Database
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   )
 }

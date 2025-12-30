@@ -39,7 +39,7 @@ export default function DatabasePage() {
   const params = useParams()
   const databaseId = params.id as string
 
-  const { entries, isLoading, error, deleteEntry, clearAll, refresh } = useKVStore(databaseId)
+  const { entries, isLoading, error, clearAll, refresh } = useKVStore(databaseId)
   const { getDatabase, deleteDatabase } = useDatabases()
   const router = useRouter()
   const { setBreadcrumbs, setDescription, setIsRefreshing, setOnRefresh } = useDashboardHeader()
@@ -85,12 +85,8 @@ export default function DatabasePage() {
   const [searchQuery, setSearchQuery] = useState("")
 
   // Dialog states
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [isClearDialogOpen, setIsClearDialogOpen] = useState(false)
   const [isDeleteDbDialogOpen, setIsDeleteDbDialogOpen] = useState(false)
-
-  // Entry to delete
-  const [entryToDelete, setEntryToDelete] = useState<string | null>(null)
 
   // Filter entries locally
   const filteredEntries = entries.filter((entry) => {
@@ -102,18 +98,6 @@ export default function DatabasePage() {
     )
   })
 
-  // Handle delete entry
-  const handleDeleteEntry = useCallback(async () => {
-    if (!entryToDelete) return
-    try {
-      await deleteEntry(entryToDelete)
-      setIsDeleteDialogOpen(false)
-      setEntryToDelete(null)
-    } catch {
-      // Error is handled by the hook
-    }
-  }, [entryToDelete, deleteEntry])
-
   // Handle clear all
   const handleClearAll = useCallback(async () => {
     try {
@@ -123,12 +107,6 @@ export default function DatabasePage() {
       // Error is handled by the hook
     }
   }, [clearAll])
-
-  // Open delete dialog
-  const openDeleteDialog = useCallback((key: string) => {
-    setEntryToDelete(key)
-    setIsDeleteDialogOpen(true)
-  }, [])
 
   // Handle delete database
   const handleDeleteDb = useCallback(async () => {
@@ -326,25 +304,6 @@ export default function DatabasePage() {
           </Button>
         </div>
       </div>
-
-      {/* Delete Entry Confirmation Dialog */}
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Entry</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete <code className="text-primary font-mono">{entryToDelete}</code>?
-              This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteEntry} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       {/* Clear All Confirmation Dialog */}
       <AlertDialog open={isClearDialogOpen} onOpenChange={setIsClearDialogOpen}>

@@ -25,12 +25,17 @@ export default function EditKeyPage() {
 
   const [database, setDatabase] = useState<DatabaseType | null>(null)
   const [isLoadingDb, setIsLoadingDb] = useState(true)
-  const [value, setValue] = useState("")
+  // null = not yet modified by user, use entry.value
+  // string = user has modified, use this value
+  const [editedValue, setEditedValue] = useState<string | null>(null)
   const [error, setError] = useState("")
   const [isSaving, setIsSaving] = useState(false)
 
   // Find the entry
   const entry = entries.find((e) => e.key === keyName)
+
+  // Display value: user edits take precedence, otherwise show entry value
+  const displayValue = editedValue ?? entry?.value ?? ""
 
   // Load database info
   useEffect(() => {
@@ -42,13 +47,6 @@ export default function EditKeyPage() {
     }
     loadDb()
   }, [databaseId, getDatabase])
-
-  // Initialize value from entry
-  useEffect(() => {
-    if (entry) {
-      setValue(entry.value)
-    }
-  }, [entry])
 
   // Set up header
   useEffect(() => {
@@ -79,13 +77,13 @@ export default function EditKeyPage() {
     setIsSaving(true)
     setError("")
     try {
-      await updateEntry(keyName, value)
+      await updateEntry(keyName, displayValue)
       router.push(`/dashboard/db/${databaseId}/key/${encodeURIComponent(keyName)}`)
     } catch {
       setError("Failed to update entry")
       setIsSaving(false)
     }
-  }, [databaseId, keyName, value, updateEntry, router])
+  }, [databaseId, keyName, displayValue, updateEntry, router])
 
   if (isLoadingDb || isLoading) {
     return (
@@ -148,8 +146,8 @@ export default function EditKeyPage() {
           <Label htmlFor="value">Value</Label>
           <Textarea
             id="value"
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
+            value={displayValue}
+            onChange={(e) => setEditedValue(e.target.value)}
             rows={12}
             className="font-mono md:text-sm"
             placeholder="Enter value..."
