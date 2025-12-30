@@ -7,6 +7,7 @@ import { useState } from "react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { UserMenu } from "./user-menu"
 
 const navigation = [
   { name: "Databases", href: "/dashboard" },
@@ -88,6 +89,9 @@ export function DashboardSidebar() {
               )
             })}
           </nav>
+
+          {/* User Menu */}
+          <UserMenu />
         </div>
       </aside>
     </>
