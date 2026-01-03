@@ -1,7 +1,7 @@
 "use client"
 
 import { DashboardSidebar } from "@/components/dashboard/sidebar"
-import { DashboardHeader, DashboardHeaderProvider } from "@/components/dashboard/header"
+import { DashboardHeaderProvider } from "@/components/dashboard/header"
 import { TooltipProvider } from "@/components/ui/tooltip"
 
 export default function DashboardLayout({
@@ -15,7 +15,6 @@ export default function DashboardLayout({
         <div className="min-h-screen bg-background flex overflow-x-hidden">
           <DashboardSidebar />
           <div className="flex-1 flex flex-col lg:ml-0 min-w-0 pt-14 lg:pt-0">
-            <DashboardHeader />
             <main className="flex-1">
               {children}
             </main>
