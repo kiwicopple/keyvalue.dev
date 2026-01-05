@@ -7,6 +7,26 @@ function generateId(): string {
   return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
 }
 
+// Simple in-memory cache to avoid repeated JSON parsing
+const cache = new Map<string, { data: unknown; timestamp: number }>()
+const CACHE_TTL = 100 // ms - short TTL to handle external changes
+
+function getCached<T>(key: string): T | null {
+  const entry = cache.get(key)
+  if (entry && Date.now() - entry.timestamp < CACHE_TTL) {
+    return entry.data as T
+  }
+  return null
+}
+
+function setCache<T>(key: string, data: T): void {
+  cache.set(key, { data, timestamp: Date.now() })
+}
+
+function invalidateCache(key: string): void {
+  cache.delete(key)
+}
+
 /**
  * LocalStorage implementation of the StorageStrategy interface
  * Stores all key-value pairs for a specific database in browser's localStorage
@@ -26,9 +46,18 @@ export class LocalStorageStrategy implements StorageStrategy {
     if (typeof window === 'undefined') {
       return {}
     }
+
+    // Check cache first
+    const cached = getCached<Record<string, KVEntry>>(this.storageKey)
+    if (cached) {
+      return cached
+    }
+
     try {
       const data = localStorage.getItem(this.storageKey)
-      return data ? JSON.parse(data) : {}
+      const parsed = data ? JSON.parse(data) : {}
+      setCache(this.storageKey, parsed)
+      return parsed
     } catch {
       return {}
     }
@@ -39,6 +68,7 @@ export class LocalStorageStrategy implements StorageStrategy {
       return
     }
     localStorage.setItem(this.storageKey, JSON.stringify(data))
+    setCache(this.storageKey, data) // Update cache on write
   }
 
   async getAll(): Promise<KVEntry[]> {
@@ -82,6 +112,7 @@ export class LocalStorageStrategy implements StorageStrategy {
 
   async clear(): Promise<void> {
     this.setStorageData({})
+    invalidateCache(this.storageKey)
   }
 
   async exists(key: string): Promise<boolean> {
@@ -116,9 +147,18 @@ export class LocalDatabaseStorageStrategy implements DatabaseStorageStrategy {
     if (typeof window === 'undefined') {
       return {}
     }
+
+    // Check cache first
+    const cached = getCached<Record<string, Database>>(DATABASES_KEY)
+    if (cached) {
+      return cached
+    }
+
     try {
       const data = localStorage.getItem(DATABASES_KEY)
-      return data ? JSON.parse(data) : {}
+      const parsed = data ? JSON.parse(data) : {}
+      setCache(DATABASES_KEY, parsed)
+      return parsed
     } catch {
       return {}
     }
@@ -129,6 +169,7 @@ export class LocalDatabaseStorageStrategy implements DatabaseStorageStrategy {
       return
     }
     localStorage.setItem(DATABASES_KEY, JSON.stringify(data))
+    setCache(DATABASES_KEY, data) // Update cache on write
   }
 
   async getAllDatabases(): Promise<Database[]> {
@@ -193,9 +234,11 @@ export class LocalDatabaseStorageStrategy implements DatabaseStorageStrategy {
     this.setDatabases(data)
 
     // Also delete all entries for this database
+    const entriesKey = `${DATA_PREFIX}${id}`
     if (typeof window !== 'undefined') {
-      localStorage.removeItem(`${DATA_PREFIX}${id}`)
+      localStorage.removeItem(entriesKey)
     }
+    invalidateCache(entriesKey)
 
     return true
   }

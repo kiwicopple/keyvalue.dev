@@ -33,39 +33,44 @@ export function useDatabases() {
     try {
       setError(null)
       const db = await dbStorage.createDatabase(name, description)
-      await loadDatabases()
+      // Optimistic update: add to state directly instead of full reload
+      setDatabases(prev => [db, ...prev])
       return db
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create database')
       throw err
     }
-  }, [loadDatabases])
+  }, [])
 
   const updateDatabase = useCallback(async (id: string, name: string, description?: string) => {
     try {
       setError(null)
       const db = await dbStorage.updateDatabase(id, name, description)
-      await loadDatabases()
+      // Optimistic update: update in state directly instead of full reload
+      if (db) {
+        setDatabases(prev => prev.map(d => d.id === id ? db : d))
+      }
       return db
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update database')
       throw err
     }
-  }, [loadDatabases])
+  }, [])
 
   const deleteDatabase = useCallback(async (id: string) => {
     try {
       setError(null)
       const deleted = await dbStorage.deleteDatabase(id)
+      // Optimistic update: remove from state directly instead of full reload
       if (deleted) {
-        await loadDatabases()
+        setDatabases(prev => prev.filter(d => d.id !== id))
       }
       return deleted
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete database')
       throw err
     }
-  }, [loadDatabases])
+  }, [])
 
   const getDatabase = useCallback(async (id: string) => {
     try {

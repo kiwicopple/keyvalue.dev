@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import Link from "next/link"
 import { Plus, Database, RefreshCw, Search, X } from "lucide-react"
 
@@ -49,15 +49,15 @@ export default function DashboardPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
 
-  // Filter databases
-  const filteredDatabases = databases.filter((db) => {
-    if (!searchQuery) return true
+  // Filter databases - memoized to avoid recalculation on every render
+  const filteredDatabases = useMemo(() => {
+    if (!searchQuery) return databases
     const query = searchQuery.toLowerCase()
-    return (
+    return databases.filter((db) =>
       db.name.toLowerCase().includes(query) ||
       db.description?.toLowerCase().includes(query)
     )
-  })
+  }, [databases, searchQuery])
 
   return (
     <div className={cn("pb-20", isFilterOpen && "pt-14 lg:pt-0")}>

@@ -32,55 +32,66 @@ export function useKVStore(databaseId: string) {
   const addEntry = useCallback(async (key: string, value: string) => {
     try {
       setError(null)
-      await storage.set(key, value)
-      await loadEntries()
+      const entry = await storage.set(key, value)
+      // Optimistic update: add to state directly instead of full reload
+      setEntries(prev => {
+        const filtered = prev.filter(e => e.key !== key)
+        return [entry, ...filtered]
+      })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to add entry')
       throw err
     }
-  }, [loadEntries, storage])
+  }, [storage])
 
   const updateEntry = useCallback(async (key: string, value: string) => {
     try {
       setError(null)
-      await storage.set(key, value)
-      await loadEntries()
+      const entry = await storage.set(key, value)
+      // Optimistic update: update in state directly instead of full reload
+      setEntries(prev => {
+        const filtered = prev.filter(e => e.key !== key)
+        return [entry, ...filtered]
+      })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update entry')
       throw err
     }
-  }, [loadEntries, storage])
+  }, [storage])
 
   const deleteEntry = useCallback(async (key: string) => {
     try {
       setError(null)
       const deleted = await storage.delete(key)
+      // Optimistic update: remove from state directly instead of full reload
       if (deleted) {
-        await loadEntries()
+        setEntries(prev => prev.filter(e => e.key !== key))
       }
       return deleted
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete entry')
       throw err
     }
-  }, [loadEntries, storage])
+  }, [storage])
 
   const clearAll = useCallback(async () => {
     try {
       setError(null)
       await storage.clear()
-      await loadEntries()
+      // Optimistic update: clear state directly instead of full reload
+      setEntries([])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to clear entries')
       throw err
     }
-  }, [loadEntries, storage])
+  }, [storage])
 
   const searchEntries = useCallback(async (pattern: string) => {
     try {
       setError(null)
       if (!pattern.trim()) {
-        await loadEntries()
+        const data = await storage.getAll()
+        setEntries(data)
         return
       }
       const results = await storage.search(pattern)
@@ -89,7 +100,7 @@ export function useKVStore(databaseId: string) {
       setError(err instanceof Error ? err.message : 'Failed to search entries')
       throw err
     }
-  }, [loadEntries, storage])
+  }, [storage])
 
   return {
     entries,

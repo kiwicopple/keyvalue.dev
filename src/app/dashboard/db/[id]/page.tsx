@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useEffect } from "react"
+import { useState, useCallback, useEffect, useMemo } from "react"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { Plus, Search, Trash2, Edit, RefreshCw, Database, Key, MoreHorizontal, X, ArrowLeft } from "lucide-react"
@@ -88,15 +88,15 @@ export default function DatabasePage() {
   const [isClearDialogOpen, setIsClearDialogOpen] = useState(false)
   const [isDeleteDbDialogOpen, setIsDeleteDbDialogOpen] = useState(false)
 
-  // Filter entries locally
-  const filteredEntries = entries.filter((entry) => {
-    if (!searchQuery) return true
+  // Filter entries locally - memoized to avoid recalculation on every render
+  const filteredEntries = useMemo(() => {
+    if (!searchQuery) return entries
     const query = searchQuery.toLowerCase()
-    return (
+    return entries.filter((entry) =>
       entry.key.toLowerCase().includes(query) ||
       entry.value.toLowerCase().includes(query)
     )
-  })
+  }, [entries, searchQuery])
 
   // Handle clear all
   const handleClearAll = useCallback(async () => {
