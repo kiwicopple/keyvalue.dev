@@ -27,6 +27,11 @@ function invalidateCache(key: string): void {
   cache.delete(key)
 }
 
+/** Clear all cached data - useful for testing */
+export function clearStorageCache(): void {
+  cache.clear()
+}
+
 /**
  * LocalStorage implementation of the StorageStrategy interface
  * Stores all key-value pairs for a specific database in browser's localStorage

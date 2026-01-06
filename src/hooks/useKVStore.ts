@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect, useCallback, useMemo, useSyncExternalStore } from 'react'
-import type { KVEntry } from '@/lib/storage'
 import { LocalStorageStrategy } from '@/lib/storage'
 import { dataStore } from '@/lib/storage/store'
 

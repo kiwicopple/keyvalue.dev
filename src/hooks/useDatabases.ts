@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback, useSyncExternalStore } from 'react'
-import type { Database, DatabaseStorageStrategy } from '@/lib/storage'
+import type { DatabaseStorageStrategy } from '@/lib/storage'
 import { LocalDatabaseStorageStrategy } from '@/lib/storage'
 import { dataStore } from '@/lib/storage/store'
 
