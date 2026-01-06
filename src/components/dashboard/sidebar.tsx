@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Database, Menu, X } from "lucide-react"
-import { useState } from "react"
+import { useState, useCallback, useMemo } from "react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -17,12 +17,18 @@ export function DashboardSidebar() {
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-  const isActive = (href: string) => {
+  const isActive = useCallback((href: string) => {
     if (href === "/dashboard") {
       return pathname === "/dashboard" || pathname.startsWith("/dashboard/db/")
     }
     return pathname.startsWith(href)
-  }
+  }, [pathname])
+
+  // Pre-compute active states to avoid recalculation during render
+  const activeStates = useMemo(() =>
+    new Map(navigation.map(item => [item.href, isActive(item.href)])),
+    [isActive]
+  )
 
   return (
     <>
@@ -70,7 +76,7 @@ export function DashboardSidebar() {
           {/* Navigation */}
           <nav className="flex-1 px-2 py-3 space-y-0.5">
             {navigation.map((item) => {
-              const active = isActive(item.href)
+              const active = activeStates.get(item.href)
               return (
                 <Link
                   key={item.name}

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useEffect } from "react"
+import { useState, useCallback, useEffect, useMemo, useSyncExternalStore } from "react"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { Plus, Search, Trash2, Edit, RefreshCw, Database, Key, MoreHorizontal, X, ArrowLeft } from "lucide-react"
@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils"
 import { useKVStore } from "@/hooks/useKVStore"
 import { useDatabases } from "@/hooks/useDatabases"
 import { useDashboardHeader } from "@/components/dashboard/header"
+import { dataStore } from "@/lib/storage/store"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -28,7 +29,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import type { Database as DatabaseType } from "@/lib/storage"
 
 function truncateValue(value: string, maxLength: number = 50): string {
   if (value.length <= maxLength) return value
@@ -40,23 +40,16 @@ export default function DatabasePage() {
   const databaseId = params.id as string
 
   const { entries, isLoading, error, clearAll, refresh } = useKVStore(databaseId)
-  const { getDatabase, deleteDatabase } = useDatabases()
+  const { deleteDatabase } = useDatabases()
   const router = useRouter()
   const { setBreadcrumbs, setDescription, setIsRefreshing, setOnRefresh } = useDashboardHeader()
 
-  const [database, setDatabase] = useState<DatabaseType | null>(null)
-  const [isLoadingDb, setIsLoadingDb] = useState(true)
-
-  // Load database info
-  useEffect(() => {
-    async function loadDb() {
-      setIsLoadingDb(true)
-      const db = await getDatabase(databaseId)
-      setDatabase(db)
-      setIsLoadingDb(false)
-    }
-    loadDb()
-  }, [databaseId, getDatabase])
+  // Get database from store instantly (no loading state needed)
+  const database = useSyncExternalStore(
+    dataStore.subscribe,
+    () => dataStore.getDatabase(databaseId),
+    () => undefined
+  )
 
   // Set up header breadcrumbs and refresh
   useEffect(() => {
@@ -88,15 +81,15 @@ export default function DatabasePage() {
   const [isClearDialogOpen, setIsClearDialogOpen] = useState(false)
   const [isDeleteDbDialogOpen, setIsDeleteDbDialogOpen] = useState(false)
 
-  // Filter entries locally
-  const filteredEntries = entries.filter((entry) => {
-    if (!searchQuery) return true
+  // Filter entries locally - memoized to avoid recalculation on every render
+  const filteredEntries = useMemo(() => {
+    if (!searchQuery) return entries
     const query = searchQuery.toLowerCase()
-    return (
+    return entries.filter((entry) =>
       entry.key.toLowerCase().includes(query) ||
       entry.value.toLowerCase().includes(query)
     )
-  })
+  }, [entries, searchQuery])
 
   // Handle clear all
   const handleClearAll = useCallback(async () => {
@@ -118,15 +111,8 @@ export default function DatabasePage() {
     }
   }, [databaseId, deleteDatabase, router])
 
-  if (isLoadingDb) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <RefreshCw className="h-5 w-5 animate-spin text-muted-foreground" />
-      </div>
-    )
-  }
-
-  if (!database) {
+  // Show not found only if we've loaded and database doesn't exist
+  if (!database && dataStore.isDatabasesLoaded()) {
     return (
       <div className="text-center py-12">
         <Database className="h-8 w-8 mx-auto text-muted-foreground/50 mb-3" />
@@ -137,6 +123,11 @@ export default function DatabasePage() {
       </div>
     )
   }
+
+  // Show the page structure immediately, with loading indicator for content
+  const showEntries = entries.length > 0
+  const showEmpty = !isLoading && entries.length === 0
+  const showLoading = isLoading && entries.length === 0
 
   return (
     <div className={cn("pb-20", isFilterOpen && "pt-14 lg:pt-0")}>
@@ -168,12 +159,21 @@ export default function DatabasePage() {
 
       {/* Page Header - hidden on mobile when filter is open */}
       <div className={cn("px-4 lg:px-6 py-6 min-w-0", isFilterOpen && "hidden lg:block")}>
-        <h1 className="text-base font-medium font-mono truncate">{database.name}</h1>
-        <p className="text-xs text-muted-foreground truncate mt-1">
-          <Link href="/dashboard" className="hover:text-foreground transition-colors">Databases</Link>
-          <span className="mx-1.5">/</span>
-          <span className="text-muted-foreground/60 font-mono">{database.name}</span>
-        </p>
+        {database ? (
+          <>
+            <h1 className="text-base font-medium font-mono truncate">{database.name}</h1>
+            <p className="text-xs text-muted-foreground truncate mt-1">
+              <Link href="/dashboard" className="hover:text-foreground transition-colors">Databases</Link>
+              <span className="mx-1.5">/</span>
+              <span className="text-muted-foreground/60 font-mono">{database.name}</span>
+            </p>
+          </>
+        ) : (
+          <>
+            <div className="h-5 w-32 bg-muted animate-pulse rounded" />
+            <div className="h-3 w-48 bg-muted animate-pulse rounded mt-2" />
+          </>
+        )}
       </div>
 
       {/* Error State */}
@@ -183,24 +183,31 @@ export default function DatabasePage() {
         </div>
       )}
 
-      {/* Loading State */}
-      {isLoading && (
+      {/* Loading State - only show if no cached entries */}
+      {showLoading && (
         <div className="flex items-center justify-center py-12">
           <RefreshCw className="h-4 w-4 animate-spin text-muted-foreground" />
         </div>
       )}
 
       {/* Empty State */}
-      {!isLoading && entries.length === 0 && (
+      {showEmpty && (
         <div className="text-center py-12 mx-4 lg:mx-6 border border-border">
           <Key className="h-6 w-6 mx-auto text-muted-foreground mb-3" />
           <p className="text-sm text-muted-foreground">No entries yet</p>
         </div>
       )}
 
-      {/* Entries List */}
-      {!isLoading && entries.length > 0 && (
+      {/* Entries List - show immediately if we have cached data */}
+      {showEntries && (
         <div className="divide-y divide-border border-y border-border">
+          {/* Subtle loading indicator while refreshing */}
+          {isLoading && (
+            <div className="px-4 lg:px-6 py-1.5 bg-muted/50 flex items-center gap-2">
+              <RefreshCw className="h-3 w-3 animate-spin text-muted-foreground" />
+              <span className="text-xs text-muted-foreground">Refreshing...</span>
+            </div>
+          )}
           {filteredEntries.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-sm text-muted-foreground">No entries match your search</p>

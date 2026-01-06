@@ -1,15 +1,22 @@
 "use client"
 
-import { useState, useEffect, useCallback } from 'react'
-import type { Database, DatabaseStorageStrategy } from '@/lib/storage'
+import { useState, useEffect, useCallback, useSyncExternalStore } from 'react'
+import type { DatabaseStorageStrategy } from '@/lib/storage'
 import { LocalDatabaseStorageStrategy } from '@/lib/storage'
+import { dataStore } from '@/lib/storage/store'
 
 // Create a singleton instance of the database storage strategy
 const dbStorage: DatabaseStorageStrategy = new LocalDatabaseStorageStrategy()
 
 export function useDatabases() {
-  const [databases, setDatabases] = useState<Database[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  // Subscribe to store changes for instant updates across routes
+  const databases = useSyncExternalStore(
+    dataStore.subscribe,
+    () => dataStore.getDatabases(),
+    () => [] // Server snapshot
+  )
+
+  const [isLoading, setIsLoading] = useState(!dataStore.isDatabasesLoaded())
   const [error, setError] = useState<string | null>(null)
 
   const loadDatabases = useCallback(async () => {
@@ -17,7 +24,7 @@ export function useDatabases() {
       setIsLoading(true)
       setError(null)
       const data = await dbStorage.getAllDatabases()
-      setDatabases(data)
+      dataStore.setDatabases(data)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load databases')
     } finally {
@@ -25,49 +32,61 @@ export function useDatabases() {
     }
   }, [])
 
+  // Load on mount only if not already loaded
   useEffect(() => {
-    loadDatabases()
+    if (!dataStore.isDatabasesLoaded()) {
+      loadDatabases()
+    }
   }, [loadDatabases])
 
   const createDatabase = useCallback(async (name: string, description?: string) => {
     try {
       setError(null)
       const db = await dbStorage.createDatabase(name, description)
-      await loadDatabases()
+      dataStore.addDatabase(db)
       return db
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create database')
       throw err
     }
-  }, [loadDatabases])
+  }, [])
 
   const updateDatabase = useCallback(async (id: string, name: string, description?: string) => {
     try {
       setError(null)
       const db = await dbStorage.updateDatabase(id, name, description)
-      await loadDatabases()
+      if (db) {
+        dataStore.updateDatabase(id, db)
+      }
       return db
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update database')
       throw err
     }
-  }, [loadDatabases])
+  }, [])
 
   const deleteDatabase = useCallback(async (id: string) => {
     try {
       setError(null)
       const deleted = await dbStorage.deleteDatabase(id)
       if (deleted) {
-        await loadDatabases()
+        dataStore.removeDatabase(id)
       }
       return deleted
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete database')
       throw err
     }
-  }, [loadDatabases])
+  }, [])
 
   const getDatabase = useCallback(async (id: string) => {
+    // Return from cache if available (instant)
+    const cached = dataStore.getDatabase(id)
+    if (cached) {
+      return cached
+    }
+
+    // Otherwise fetch
     try {
       setError(null)
       return await dbStorage.getDatabase(id)

@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 import { describe, it, expect, beforeEach } from 'vitest'
-import { LocalStorageStrategy, LocalDatabaseStorageStrategy } from '@/lib/storage'
+import { LocalStorageStrategy, LocalDatabaseStorageStrategy, clearStorageCache } from '@/lib/storage'
 
 describe('LocalStorageStrategy', () => {
   const databaseId = 'test-db-123'
@@ -10,6 +10,7 @@ describe('LocalStorageStrategy', () => {
 
   beforeEach(() => {
     localStorage.clear()
+    clearStorageCache() // Clear in-memory cache too
     storage = new LocalStorageStrategy(databaseId)
   })
 
@@ -149,6 +150,7 @@ describe('LocalDatabaseStorageStrategy', () => {
 
   beforeEach(() => {
     localStorage.clear()
+    clearStorageCache() // Clear in-memory cache too
     dbStorage = new LocalDatabaseStorageStrategy()
   })
 
