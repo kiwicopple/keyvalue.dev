@@ -1,12 +1,19 @@
 "use client"
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useSyncExternalStore } from 'react'
 import type { KVEntry } from '@/lib/storage'
 import { LocalStorageStrategy } from '@/lib/storage'
+import { dataStore } from '@/lib/storage/store'
 
 export function useKVStore(databaseId: string) {
-  const [entries, setEntries] = useState<KVEntry[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  // Subscribe to store changes for instant updates across routes
+  const entries = useSyncExternalStore(
+    dataStore.subscribe,
+    () => dataStore.getEntries(databaseId),
+    () => [] // Server snapshot
+  )
+
+  const [isLoading, setIsLoading] = useState(!dataStore.isEntriesLoaded(databaseId))
   const [error, setError] = useState<string | null>(null)
 
   // Create storage instance for this database
@@ -17,90 +24,83 @@ export function useKVStore(databaseId: string) {
       setIsLoading(true)
       setError(null)
       const data = await storage.getAll()
-      setEntries(data)
+      dataStore.setEntries(databaseId, data)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load entries')
     } finally {
       setIsLoading(false)
     }
-  }, [storage])
+  }, [databaseId, storage])
 
+  // Load on mount only if not already loaded
   useEffect(() => {
-    loadEntries()
-  }, [loadEntries])
+    if (!dataStore.isEntriesLoaded(databaseId)) {
+      loadEntries()
+    }
+  }, [databaseId, loadEntries])
 
   const addEntry = useCallback(async (key: string, value: string) => {
     try {
       setError(null)
       const entry = await storage.set(key, value)
-      // Optimistic update: add to state directly instead of full reload
-      setEntries(prev => {
-        const filtered = prev.filter(e => e.key !== key)
-        return [entry, ...filtered]
-      })
+      dataStore.addEntry(databaseId, entry)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to add entry')
       throw err
     }
-  }, [storage])
+  }, [databaseId, storage])
 
   const updateEntry = useCallback(async (key: string, value: string) => {
     try {
       setError(null)
       const entry = await storage.set(key, value)
-      // Optimistic update: update in state directly instead of full reload
-      setEntries(prev => {
-        const filtered = prev.filter(e => e.key !== key)
-        return [entry, ...filtered]
-      })
+      dataStore.updateEntry(databaseId, entry)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update entry')
       throw err
     }
-  }, [storage])
+  }, [databaseId, storage])
 
   const deleteEntry = useCallback(async (key: string) => {
     try {
       setError(null)
       const deleted = await storage.delete(key)
-      // Optimistic update: remove from state directly instead of full reload
       if (deleted) {
-        setEntries(prev => prev.filter(e => e.key !== key))
+        dataStore.removeEntry(databaseId, key)
       }
       return deleted
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete entry')
       throw err
     }
-  }, [storage])
+  }, [databaseId, storage])
 
   const clearAll = useCallback(async () => {
     try {
       setError(null)
       await storage.clear()
-      // Optimistic update: clear state directly instead of full reload
-      setEntries([])
+      dataStore.clearEntries(databaseId)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to clear entries')
       throw err
     }
-  }, [storage])
+  }, [databaseId, storage])
 
   const searchEntries = useCallback(async (pattern: string) => {
     try {
       setError(null)
       if (!pattern.trim()) {
         const data = await storage.getAll()
-        setEntries(data)
+        dataStore.setEntries(databaseId, data)
         return
       }
       const results = await storage.search(pattern)
-      setEntries(results)
+      dataStore.setEntries(databaseId, results)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to search entries')
       throw err
     }
-  }, [storage])
+  }, [databaseId, storage])
 
   return {
     entries,
