@@ -23,6 +23,9 @@ const store: Store = {
   listeners: new Set(),
 }
 
+// Stable empty array reference to avoid useSyncExternalStore infinite loops
+const EMPTY_ENTRIES: KVEntry[] = []
+
 function notify() {
   store.listeners.forEach(listener => listener())
 }
@@ -72,7 +75,7 @@ export const dataStore = {
 
   // Entries
   getEntries(databaseId: string): KVEntry[] {
-    return store.entries.get(databaseId) || []
+    return store.entries.get(databaseId) || EMPTY_ENTRIES
   },
 
   isEntriesLoaded(databaseId: string): boolean {
